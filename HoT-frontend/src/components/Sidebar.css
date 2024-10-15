@@ -1,0 +1,91 @@
+/* General Sidebar Container */
+.sidebar-container {
+    width: 200px; /* Set a fixed width */
+    height: 100vh; /* Full height of the viewport */
+    background-color: #1a73e8; /* Primary Blue */
+    color: white;
+    position: fixed; /* Fixed positioning */
+    top: 0;
+    left: 0;
+    padding-top: 20px; /* Padding at the top */
+    display: flex;
+    flex-direction: column; /* Column layout */
+}
+
+/* Sidebar Menu */
+.sidebar-menu {
+    list-style: none; /* Remove list styles */
+    padding: 0; /* Remove padding */
+    margin: 0; /* Remove margin */
+    flex: 1; /* Take available space */
+}
+
+/* Sidebar Item */
+.sidebar-item {
+    width: 100%; /* Full width */
+    padding: 10px; /* Reduced padding for each item */
+}
+
+/* Sidebar Link */
+.sidebar-link {
+    display: flex; /* Flexbox for icon and text */
+    align-items: center; /* Center align items */
+    text-decoration: none; /* No underline */
+    color: white; /* Text color */
+    font-size: 12px; /* Reduced font size */
+    padding: 8px 15px; /* Reduced padding */
+    transition: background 0.3s ease; /* Transition for background */
+}
+
+/* Sidebar Icon Styling */
+.sidebar-icon {
+    margin-right: 10px; /* Reduced space between icon and text */
+    font-size: 20px; /* Slightly smaller icon size */
+}
+
+/* Hover Effects */
+.sidebar-link:hover {
+    background-color: #0b57d0; /* Background on hover */
+    cursor: pointer; /* Cursor change on hover */
+}
+
+/* Active or Selected Link Styling */
+.sidebar-link.active {
+    background-color: #0b57d0; /* Active background */
+    font-weight: bold; /* Bold text */
+}
+
+/* Logout Button */
+.logout-button {
+    background-color: #ffffff; /* Red background for logout */
+    color: #0b57d0; /* White text */
+    border: none; /* No border */
+    padding: 10px; /* Padding */
+    margin: 10px; /* Margin for spacing */
+    cursor: pointer; /* Pointer cursor on hover */
+    font-size: 12px; /* Same font size as links */
+    display: flex; /* Flexbox for icon and text */
+    align-items: center; /* Center align items */
+    justify-content: center; /* Center content */
+    transition: background 0.3s ease; /* Transition for background */
+}
+
+/* Logout Button Hover Effect */
+.logout-button:hover {
+    background-color: #aacbff; /* Darker red on hover */
+}
+
+/* Responsive Sidebar (for small screens) */
+@media (max-width: 768px) {
+    .sidebar-container {
+        width: 200px; /* Adjust width for small screens */
+    }
+
+    .sidebar-link {
+        font-size: 14px; /* Further reduce font size for small screens */
+    }
+
+    .sidebar-icon {
+        font-size: 18px; /* Further reduce icon size for small screens */
+    }
+}
