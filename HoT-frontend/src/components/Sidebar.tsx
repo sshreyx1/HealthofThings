@@ -39,7 +39,7 @@ const Sidebar: React.FC = () => {
                     </Link>
                 </li>
                 <li className="sidebar-item">
-                    <Link to="/healthcare-visit" className="sidebar-link">
+                    <Link to="/visit" className="sidebar-link">
                         <FaHospitalAlt className="sidebar-icon" /> Healthcare Visit
                     </Link>
                 </li>
