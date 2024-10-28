@@ -202,7 +202,7 @@ const Diagnosis: React.FC = () => {
       <Sidebar />
       <div className="diagnosis-content">
         <div className="diagnosis-header-container">
-          <h1>Patient Diagnosis</h1>
+          <h1>Diagnosis</h1>
           
           {alerts.filter(a => !a.acknowledged).length > 0 && (
             <div className="alerts-banner">

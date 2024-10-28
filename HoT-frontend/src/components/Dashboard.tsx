@@ -37,7 +37,7 @@ const Dashboard: React.FC = () => {
     <div className="dashboard-page">
       <Sidebar />
       <div className="dashboard-content">
-        <h1>Patient Health Monitoring Dashboard</h1>
+        <h1>Health Monitoring Dashboard</h1>
         <div className="dashboard-grid">
           <Card title="Heart Rate Monitor">
             <ResponsiveContainer width="100%" height="100%">

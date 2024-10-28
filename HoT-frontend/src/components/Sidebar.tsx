@@ -35,7 +35,7 @@ const Sidebar: React.FC = () => {
                 </li>
                 <li className="sidebar-item">
                     <Link to="/schedule" className="sidebar-link">
-                        <FaCalendarCheck className="sidebar-icon" /> My Schedule
+                        <FaCalendarCheck className="sidebar-icon" /> Schedule
                     </Link>
                 </li>
                 <li className="sidebar-item">

@@ -220,7 +220,7 @@ const Schedule: React.FC = () => {
       <Sidebar />
       <div className="schedule-content">
         <div className="schedule-header">
-          <h1>My Schedule</h1>
+          <h1>Schedule</h1>
         </div>
         <div className="calendar-container">
           <div className="calendar-header">
