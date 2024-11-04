@@ -10,4 +10,16 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  server: {
+    proxy: {
+      '/api/infermedica': {
+        target: 'https://api.infermedica.com/v3',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/infermedica/, ''),
+        headers: {
+          'Access-Control-Allow-Origin': '*'
+        }
+      }
+    }
+  }
 })
