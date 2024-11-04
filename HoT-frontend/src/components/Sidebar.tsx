@@ -45,7 +45,7 @@ const Sidebar: React.FC = () => {
                 </li>
                 <li className="sidebar-item">
                     <Link to="/chatbot" className="sidebar-link">
-                        <FaRobot className="sidebar-icon" /> Symptoms Chatbot
+                        <FaRobot className="sidebar-icon" /> Chatbot
                     </Link>
                 </li>
             </ul>
