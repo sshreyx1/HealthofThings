@@ -6,6 +6,7 @@ import Schedule from './components/Schedule';
 import Diagnosis from './components/Diagnosis';
 import Treatment from './components/Treatment';
 import Visit from './components/Visit';
+import Chatbot from './components/Chatbot';
 import ProtectedRoute from './components/ProtectedRoute';
 
 const App: React.FC = () => {
@@ -20,6 +21,7 @@ const App: React.FC = () => {
                     <Route path="/diagnosis" element={<Diagnosis />} />
                     <Route path="/treatment" element={<Treatment />} />
                     <Route path="/visit" element={<Visit />} />
+                    <Route path="/chatbot" element={<Chatbot />} />
                     {/* Add other protected routes here */}
                 </Route>
 
