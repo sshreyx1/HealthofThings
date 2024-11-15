@@ -7,6 +7,11 @@ import Diagnosis from './components/Diagnosis';
 import Treatment from './components/Treatment';
 import Visit from './components/Visit';
 import Chatbot from './components/Chatbot';
+import DocPatients from './components/doc/DocPatients';
+import DocSchedule from './components/doc/DocSchedule';
+import DocAlerts from './components/doc/DocAlerts';
+import DocConsultation from './components/doc/DocConsultation';
+import DocDashboard from './components/doc/DocDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 
 const App: React.FC = () => {
@@ -22,6 +27,12 @@ const App: React.FC = () => {
                     <Route path="/treatment" element={<Treatment />} />
                     <Route path="/visit" element={<Visit />} />
                     <Route path="/chatbot" element={<Chatbot />} />
+
+                    <Route path="/docpatients" element={<DocPatients />} />
+                    <Route path="/docschedule" element={<DocSchedule />} />
+                    <Route path="/docalerts" element={<DocAlerts />} />
+                    <Route path="/docconsult" element={<DocConsultation />} />
+                    <Route path="/docdashboard" element={<DocDashboard />} />
                     {/* Add other protected routes here */}
                 </Route>
 

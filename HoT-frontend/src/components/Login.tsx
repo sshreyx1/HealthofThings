@@ -31,10 +31,11 @@ const Login = () => {
 
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
-        const isValid = (selectedRole === 'doctor' && username === 'doctor' && password === 'password') ||
-                       (selectedRole === 'patient' && username === 'patient' && password === 'password');
-
-        if (isValid) {
+        if (selectedRole === 'doctor' && username === 'doctor' && password === 'password') {
+            localStorage.setItem('authToken', 'dummy_token');
+            localStorage.setItem('userRole', selectedRole);
+            navigate('/docalerts');
+        } else if (selectedRole === 'patient' && username === 'patient' && password === 'password') {
             localStorage.setItem('authToken', 'dummy_token');
             localStorage.setItem('userRole', selectedRole);
             navigate('/dashboard');

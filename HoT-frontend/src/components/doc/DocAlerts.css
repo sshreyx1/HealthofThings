@@ -1,0 +1,236 @@
+.docalert-page {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+}
+
+.docalert-content {
+    flex-grow: 1;
+    padding: 24px;
+    margin-left: 250px;
+    background-color: #f0f2f5;
+    overflow-y: auto;
+}
+
+.docalert-main {
+    max-width: 1200px;
+}
+
+.docalert-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.docalert-title {
+    margin: 0;
+    color: #333;
+    font-size: 1.75rem;
+    font-weight: 600;
+}
+
+.docalert-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.docalert-filter {
+    display: flex;
+    align-items: center;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 8px 12px;
+}
+
+.docalert-filter svg {
+    color: #666;
+    margin-right: 8px;
+}
+
+.docalert-select {
+    border: none;
+    outline: none;
+    font-size: 0.9rem;
+    color: #333;
+    background: none;
+    cursor: pointer;
+    min-width: 120px;
+}
+
+.docalert-unread-count {
+    font-size: 0.9rem;
+    color: #666;
+    background: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+}
+
+.docalert-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.docalert-card {
+    border-radius: 12px;
+    padding: 16px;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+
+.docalert-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.docalert-card.unread.critical {
+    background-color: #ffebee;
+}
+
+.docalert-card.unread.warning {
+    background-color: #fff3e0;
+}
+
+.docalert-card.unread.appointment {
+    background-color: #e3f2fd;
+}
+
+.docalert-card.unread.message {
+    background-color: #e8f5e9;
+}
+
+.docalert-card-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.docalert-icon-critical { color: #f44336; }
+.docalert-icon-warning { color: #ff9800; }
+.docalert-icon-appointment { color: #2196f3; }
+.docalert-icon-message { color: #4caf50; }
+
+.docalert-card-main {
+    flex-grow: 1;
+}
+
+.docalert-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.docalert-card-title {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #333;
+}
+
+.docalert-card-patient {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 4px 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.docalert-card-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.docalert-action-button {
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.docalert-read-button {
+    color: #9e9e9e;
+}
+
+.docalert-read-button:hover {
+    color: #4caf50;
+}
+
+.docalert-delete-button {
+    color: #9e9e9e;
+}
+
+.docalert-delete-button:hover {
+    color: #f44336;
+}
+
+.docalert-card-message {
+    margin: 8px 0;
+    color: #555;
+    font-size: 0.95rem;
+}
+
+.docalert-card-timestamp {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #666;
+    font-size: 0.85rem;
+    margin-top: 8px;
+}
+
+@media (max-width: 768px) {
+    .docalert-content {
+        margin-left: 60px;
+        padding: 16px;
+    }
+    
+    .docalert-card-content {
+        flex-direction: column;
+    }
+    
+    .docalert-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .docalert-controls {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .docalert-filter {
+        width: 100%;
+    }
+
+    .docalert-select {
+        width: 100%;
+    }
+}
+
+.docalert-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.docalert-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.docalert-content::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.docalert-content::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
