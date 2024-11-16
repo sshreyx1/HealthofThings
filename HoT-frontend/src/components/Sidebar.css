@@ -1,91 +1,125 @@
-/* General Sidebar Container */
-.sidebar-container {
-    width: 200px; /* Set a fixed width */
-    height: 100vh; /* Full height of the viewport */
-    background-color: #1a73e8; /* Primary Blue */
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    background: #1a73e8;
     color: white;
-    position: fixed; /* Fixed positioning */
-    top: 0;
-    left: 0;
-    padding-top: 20px; /* Padding at the top */
+    padding: 20px;
     display: flex;
-    flex-direction: column; /* Column layout */
+    flex-direction: column;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 1000;
+    transition: all 0.3s ease;
 }
 
-/* Sidebar Menu */
-.sidebar-menu {
-    list-style: none; /* Remove list styles */
-    padding: 0; /* Remove padding */
-    margin: 0; /* Remove margin */
-    flex: 1; /* Take available space */
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Sidebar Item */
-.sidebar-item {
-    width: 100%; /* Full width */
-    padding: 10px; /* Reduced padding for each item */
+.heart-icon {
+    color: white;
 }
 
-/* Sidebar Link */
-.sidebar-link {
-    display: flex; /* Flexbox for icon and text */
-    align-items: center; /* Center align items */
-    text-decoration: none; /* No underline */
-    color: white; /* Text color */
-    font-size: 12px; /* Reduced font size */
-    padding: 8px 15px; /* Reduced padding */
-    transition: background 0.3s ease; /* Transition for background */
+.sidebar-header h1 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: white;
+    padding-left: 10px;
+    padding-top: 5px;
 }
 
-/* Sidebar Icon Styling */
-.sidebar-icon {
-    margin-right: 10px; /* Reduced space between icon and text */
-    font-size: 20px; /* Slightly smaller icon size */
+.sidebar-nav {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px 0;
 }
 
-/* Hover Effects */
-.sidebar-link:hover {
-    background-color: #0b57d0; /* Background on hover */
-    cursor: pointer; /* Cursor change on hover */
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.2s;
 }
 
-/* Active or Selected Link Styling */
-.sidebar-link.active {
-    background-color: #0b57d0; /* Active background */
-    font-weight: bold; /* Bold text */
+.nav-item:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
 }
 
-/* Logout Button */
+.nav-item.active {
+    background: rgba(255, 255, 255, 0.3);
+    font-weight: 500;
+}
+
+.nav-item span {
+    font-size: 0.9rem;
+}
+
+.sidebar-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 16px;
+}
+
+.logout-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
 .logout-button {
-    background-color: #ffffff; /* Red background for logout */
-    color: #0b57d0; /* White text */
-    border: none; /* No border */
-    padding: 10px; /* Padding */
-    margin: 10px; /* Margin for spacing */
-    cursor: pointer; /* Pointer cursor on hover */
-    font-size: 12px; /* Same font size as links */
-    display: flex; /* Flexbox for icon and text */
-    align-items: center; /* Center align items */
-    justify-content: center; /* Center content */
-    transition: background 0.3s ease; /* Transition for background */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 12px 24px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+    width: auto;
+    min-width: 120px;
 }
 
-/* Logout Button Hover Effect */
 .logout-button:hover {
-    background-color: #aacbff; /* Darker red on hover */
+    background: rgba(255, 255, 255, 0.25);
 }
 
-/* Responsive Sidebar (for small screens) */
 @media (max-width: 768px) {
-    .sidebar-container {
-        width: 200px; /* Adjust width for small screens */
+    .sidebar {
+        width: 60px;
+        padding: 16px 8px;
     }
 
-    .sidebar-link {
-        font-size: 14px; /* Further reduce font size for small screens */
+    .sidebar-header h1,
+    .nav-item span,
+    .logout-button span {
+        display: none;
     }
 
-    .sidebar-icon {
-        font-size: 18px; /* Further reduce icon size for small screens */
+    .nav-item,
+    .logout-button {
+        justify-content: center;
+        padding: 12px;
+    }
+
+    .logout-button {
+        min-width: unset;
+        width: 40px;
+        padding: 12px;
     }
 }

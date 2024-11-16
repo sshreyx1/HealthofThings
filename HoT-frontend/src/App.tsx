@@ -7,6 +7,7 @@ import Diagnosis from './components/Diagnosis';
 import Treatment from './components/Treatment';
 import Visit from './components/Visit';
 import Chatbot from './components/Chatbot';
+import Consultation from './components/Consultation';
 import DocPatients from './components/doc/DocPatients';
 import DocSchedule from './components/doc/DocSchedule';
 import DocAlerts from './components/doc/DocAlerts';
@@ -27,6 +28,7 @@ const App: React.FC = () => {
                     <Route path="/treatment" element={<Treatment />} />
                     <Route path="/visit" element={<Visit />} />
                     <Route path="/chatbot" element={<Chatbot />} />
+                    <Route path="/consult" element={<Consultation />} />
 
                     <Route path="/docpatients" element={<DocPatients />} />
                     <Route path="/docschedule" element={<DocSchedule />} />

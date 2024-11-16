@@ -1,11 +1,11 @@
-.doc-consultation-page {
+.patient-consult-page {
     display: flex;
     height: 100vh;
     width: 100vw;
     overflow: hidden;
 }
 
-.consultation-content {
+.patient-consult-content {
     flex-grow: 1;
     margin-left: 250px;
     padding: 24px;
@@ -16,492 +16,595 @@
     height: 100vh;
 }
 
-.consultation-header {
+.patient-consult-header {
+    margin-bottom: 24px;
+}
+
+.patient-consult-header h1 {
+    margin: 0 0 16px 0;
+    color: #333;
+    font-size: 1.75rem;
+    font-weight: 600;
+}
+
+
+.patient-consult-header1 {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding: 16px 24px;
-    background: white;
-    border-radius: 12px;
-    margin-bottom: 24px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    align-items: flex-start;
 }
 
-.patient.patient-info {
+.patient-consult-doctor-header1 {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
+}
+
+.patient-consult-doctor-info {
+    display: flex;
     gap: 16px;
 }
 
-.patient-info h2 {
-    margin: 0;
-    font-size: 1.25rem;
-    color: #333;
+.patient-consult-doctor-info h2 {
+    margin: 0 0 4px 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #111827;
 }
 
-.patient-info span {
-    color: #666;
+.patient-consult-doctor-info span {
+    color: #6b7280;
     font-size: 0.9rem;
 }
 
-.consultation-status {
+.patient-consult-back {
+    background: none;
+    border: none;
+    padding: 0;
+    margin-right: 16px;
+    cursor: pointer;
+    color: #6b7280;
+}
+
+.patient-consult-back:hover {
+    color: #111827;
+}
+
+.patient-consult-date {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+/* Search and List View Styles */
+.patient-consult-search {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+.patient-consult-search svg {
+    color: #666;
+    margin-right: 12px;
+}
+
+.patient-consult-search input {
+    flex-grow: 1;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+}
+
+.patient-consult-reminder {
+    background: #fff7ed;
+    border: 1px solid #fdba74;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 24px;
+}
+
+.patient-consult-reminder-content {
     display: flex;
     align-items: center;
     gap: 12px;
-    color: #666;
-    font-size: 0.9rem;
+    color: #9a3412;
 }
 
-.consultation-main {
+.patient-consult-doctors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.patient-consult-doctor-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid #e5e7eb;
+}
+
+.patient-consult-doctor-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.patient-consult-doctor-details {
+    font-size: 0.9rem;
+    color: #4b5563;
+    line-height: 1.5;
+}
+
+.patient-consult-status {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.patient-consult-status.online {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.patient-consult-status.offline {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+.patient-consult-status.in-consultation {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.patient-consult-unread {
+    display: inline-block;
+    padding: 4px 12px;
+    background: #ef4444;
+    color: white;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    margin-top: 12px;
+}
+
+/* Main Content Area */
+.patient-consult-main {
     display: flex;
     gap: 24px;
-    height: calc(100vh - 140px);
 }
 
-.consultation-left {
+.patient-consult-left {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 24px;
 }
 
-.video-controls {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
+/* Video Call Section */
+.patient-consult-call {
+    position: relative;
+}
+
+.patient-consult-call-button {
+    width: 100%;
     padding: 12px;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.control-button {
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 20px;
-    border: none;
-    background: #f0f2f5;
-    color: #333;
-    cursor: pointer;
-    transition: all 0.2s;
+    gap: 8px;
+    margin-bottom: 20px;
 }
 
-.control-button:hover {
-    background: #e4e6e9;
-}
-
-.control-button.disabled {
-    background: #ff4d4f;
-    color: white;
-}
-
-.control-button.end-call {
-    background: #ff4d4f;
-    color: white;
-}
-
-.control-button.end-call:hover {
-    background: #ff1f1f;
-}
-
-.video-container {
-    flex-grow: 1;
+.patient-consult-video {
     background: #000;
     border-radius: 12px;
+    aspect-ratio: 16/9;
     position: relative;
-    overflow: hidden;
+    margin-bottom: 20px;
 }
 
-.video-container.fullscreen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 1000;
-}
-
-.remote-video {
-    width: 100%;
-    height: 100%;
-    background: #1a1a1a;
-}
-
-.local-video {
+.patient-consult-video-close {
     position: absolute;
-    bottom: 16px;
-    right: 16px;
-    width: 160px;
-    height: 90px;
-    background: #333;
-    border-radius: 8px;
-    border: 2px solid rgba(255, 255, 255, 0.1);
-}
-
-.video-placeholder {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: rgba(255, 255, 255, 0.5);
-    gap: 8px;
-}
-
-.consultation-tabs {
-    display: flex;
-    gap: 8px;
-}
-
-.tab-button {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 12px;
-    background: white;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.5);
     border: none;
-    border-radius: 8px;
-    color: #666;
+    color: white;
+    padding: 8px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.patient-consult-call-status {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 8px 16px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border-radius: 20px;
+}
+
+.patient-consult-controls {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 30px;
+    z-index: 10;
+}
+
+.patient-consult-control-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
     transition: all 0.2s;
-}
-
-.tab-button.active {
-    background: #1a73e8;
+    background: #374151;
     color: white;
 }
 
-.chat-container {
+.patient-consult-control-btn:hover {
+    background: #4b5563;
+}
+
+.patient-consult-control-btn.disabled {
+    background: #ef4444;
+}
+
+.patient-consult-control-btn.end-call {
+    background: #ef4444;
+}
+
+.patient-consult-control-btn.end-call:hover {
+    background: #dc2626;
+}
+
+.patient-consult-video-stream {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+/* Chat Section */
+.patient-consult-chat {
     background: white;
     border-radius: 12px;
     display: flex;
     flex-direction: column;
-    height: 400px;
+    height: 500px;
 }
 
-.messages {
+.patient-consult-messages {
     flex-grow: 1;
-    padding: 16px;
+    padding: 20px;
     overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
 }
 
-.message {
+.patient-consult-message {
     max-width: 70%;
-    padding: 12px;
+    padding: 12px 16px;
+    margin-bottom: 12px;
     border-radius: 12px;
     position: relative;
 }
 
-.message.sent {
-    background: #e3f2fd;
+.patient-consult-message.sent {
+    background: #dbeafe;
     margin-left: auto;
     border-bottom-right-radius: 4px;
 }
 
-.message.received {
-    background: #f5f5f5;
+.patient-consult-message.received {
+    background: #f3f4f6;
     margin-right: auto;
     border-bottom-left-radius: 4px;
 }
 
-.message p {
+.patient-consult-message p {
     margin: 0;
-    color: #333;
+    color: #111827;
+    line-height: 1.5;
 }
 
-.message-time {
+.patient-consult-message-time {
     font-size: 0.75rem;
-    color: #666;
-    position: absolute;
-    bottom: -18px;
+    color: #6b7280;
+    margin-top: 4px;
+    text-align: right;
 }
 
-.message.sent .message-time {
-    right: 0;
-}
-
-.file-message {
+.patient-consult-file-message {
     display: flex;
     align-items: center;
     gap: 8px;
-    color: #333;
+    color: #111827;
 }
 
-.download-button {
+.patient-consult-download {
     background: none;
     border: none;
-    color: #1a73e8;
+    color: #2563eb;
     cursor: pointer;
     padding: 4px;
 }
 
-.message-input {
+.patient-consult-input-container {
+    padding: 16px;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.patient-consult-input {
+    flex-grow: 1;
+    padding: 10px 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 24px;
+    outline: none;
+    font-size: 0.9rem;
+}
+
+.patient-consult-msg-buttons {
     display: flex;
     gap: 8px;
-    padding: 16px;
-    border-top: 1px solid #eee;
 }
 
-.message-input input {
-    flex-grow: 1;
-    padding: 8px 12px;
-    border: 1px solid #e0e0e0;
-    border-radius: 20px;
-    outline: none;
-}
-
-.attach-button,
-.send-button {
+.patient-consult-attach,
+.patient-consult-send {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 18px;
-    border: none;
-    background: #f0f2f5;
-    color: #666;
     cursor: pointer;
-    transition: all 0.2s;
 }
 
-.send-button {
-    background: #1a73e8;
+.patient-consult-attach {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+.patient-consult-attach:hover {
+    background: #e5e7eb;
+}
+
+.patient-consult-send {
+    background: #2563eb;
     color: white;
 }
 
-.consultation-right {
+.patient-consult-send:hover {
+    background: #1d4ed8;
+}
+
+/* Right Section */
+.patient-consult-right {
     width: 400px;
     display: flex;
     flex-direction: column;
     gap: 24px;
 }
 
-.consultation-notes,
-.prescriptions-section {
+.patient-consult-notes,
+.patient-consult-prescriptions {
     background: white;
     border-radius: 12px;
     padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
 }
 
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.patient-consult-section-header {
+    margin-bottom: 16px;
 }
 
-.section-header h3 {
+.patient-consult-section-header h3 {
     margin: 0;
-    color: #333;
     font-size: 1.1rem;
+    color: #333;
 }
 
-.note-type-selector select {
-    padding: 6px 12px;
-    border: 1px solid #e0e0e0;
-    border-radius: 6px;
-    outline: none;
-}
-
-.notes-container {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-.note-item {
-    background: #f8f9fa;
+.patient-consult-note-item {
+    background: #f9fafb;
     border-radius: 8px;
-    padding: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    border-left: 3px solid transparent;
 }
 
-.note-header {
+.patient-consult-note-item.symptom {
+    border-left-color: #f59e0b;
+}
+
+.patient-consult-note-item.diagnosis {
+    border-left-color: #2563eb;
+}
+
+.patient-consult-note-item.prescription {
+    border-left-color: #16a34a;
+}
+
+.patient-consult-note-item.general {
+    border-left-color: #6b7280;
+}
+
+.patient-consult-note-header {
     display: flex;
     justify-content: space-between;
     margin-bottom: 8px;
 }
 
-.note-type {
-    font-size: 0.8rem;
-    font-weight: 500;
+.patient-consult-note-type {
+    font-size: 0.75rem;
+    font-weight: 600;
     text-transform: uppercase;
+    color: #6b7280;
 }
 
-.note-time {
-    font-size: 0.8rem;
-    color: #666;
-}
-
-.note-item.symptom {
-    border-left: 3px solid #ff9800;
-}
-
-.note-item.diagnosis {
-    border-left: 3px solid #2196f3;
-}
-
-.note-item.prescription {
-    border-left: 3px solid #4caf50;
-}
-
-.note-input {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.note-input textarea {
-    padding: 8px 12px;
-    border: 1px solid #e0e0e0;
-    border-radius: 6px;
-    resize: vertical;
-    min-height: 80px;
-}
-
-.note-input button {
-    padding: 8px;
-    background: #1a73e8;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-.add-prescription-button {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    background: #1a73e8;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.9rem;
-}
-
-.prescription-form {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding: 16px;
-    background: #f8f9fa;
-    border-radius: 8px;
-}
-
-.prescription-form input,
-.prescription-form textarea {
-    padding: 8px 12px;
-    border: 1px solid #e0e0e0;
-    border-radius: 6px;
-}
-
-.prescription-form textarea {
-    resize: vertical;
-    min-height: 60px;
-}
-
-.form-buttons {
-    display: flex;
-    gap: 8px;
-}
-
-.form-buttons button {
-    flex: 1;
-    padding: 8px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-.form-buttons button:first-child {
-    background: #1a73e8;
-    color: white;
-}
-
-.form-buttons button:last-child {
-    background: #f0f2f5;
-    color: #666;
-}
-
-.prescriptions-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.prescription-item {
-    background: #f8f9fa;
+.patient-consult-prescription-item {
+    background: #f9fafb;
     border-radius: 8px;
     padding: 16px;
+    margin-bottom: 12px;
 }
 
-.prescription-item h4 {
+.patient-consult-prescription-item h4 {
     margin: 0 0 12px 0;
-    color: #333;
+    color: #111827;
 }
 
-.prescription-details {
+.patient-consult-prescription-details {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-}
-
-.prescription-details p {
-    margin: 0;
+    gap: 8px;
     font-size: 0.9rem;
-    color: #666;
 }
 
-.prescription-notes {
-    margin-top: 8px;
-    padding-top: 8px;
-    border-top: 1px solid #e0e0e0;
+.patient-consult-prescription-details p {
+    margin: 0;
+    color: #4b5563;
+}
+
+.patient-consult-prescription-notes {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #e5e7eb;
+    font-style: italic;
+    color: #6b7280;
+}
+
+.patient-consult-no-content {
+    text-align: center;
+    color: #6b7280;
+    padding: 24px;
+    background: #f9fafb;
+    border-radius: 8px;
     font-style: italic;
 }
 
-@media (max-width: 1200px) {
-    .consultation-main {
+/* Custom scrollbar styles */
+.patient-consult-messages::-webkit-scrollbar,
+.patient-consult-right::-webkit-scrollbar {
+    width: 8px;
+}
+
+.patient-consult-messages::-webkit-scrollbar-track,
+.patient-consult-right::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.patient-consult-messages::-webkit-scrollbar-thumb,
+.patient-consult-right::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.patient-consult-messages::-webkit-scrollbar-thumb:hover,
+.patient-consult-right::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Responsive Design */
+@media (max-width: 1280px) {
+    .patient-consult-main {
         flex-direction: column;
     }
 
-    .consultation-right {
+    .patient-consult-right {
         width: 100%;
     }
 }
 
 @media (max-width: 768px) {
-    .consultation-content {
-        margin-left: 60px;
+    .patient-consult-content {
+        margin-left: 0;
         padding: 16px;
     }
 
-    .consultation-header {
+    .patient-consult-header {
         flex-direction: column;
-        gap: 12px;
-        align-items: flex-start;
+        gap: 16px;
     }
 
-    .video-controls {
-        flex-wrap: wrap;
+    .patient-consult-doctors-grid {
+        grid-template-columns: 1fr;
     }
 
-    .local-video {
-        width: 120px;
-        height: 68px;
+    .patient-consult-date {
+        align-self: flex-end;
+    }
+}
+
+/* Print styles */
+@media print {
+    .patient-consult-page {
+        height: auto;
+    }
+
+    .sidebar,
+    .patient-consult-controls {
+        display: none;
+    }
+
+    .patient-consult-content {
+        margin-left: 0;
+        padding: 0;
+    }
+
+    .patient-consult-main {
+        flex-direction: column;
+    }
+
+    .patient-consult-right {
+        width: 100%;
+    }
+
+    .patient-consult-video,
+    .patient-consult-controls,
+    .patient-consult-msg-buttons,
+    .patient-consult-back {
+        display: none;
+    }
+
+    .patient-consult-message {
+        page-break-inside: avoid;
+    }
+
+    .patient-consult-note-item,
+    .patient-consult-prescription-item {
+        page-break-inside: avoid;
+        border: 1px solid #e5e7eb;
     }
 }

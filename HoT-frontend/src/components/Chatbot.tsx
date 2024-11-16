@@ -122,37 +122,20 @@ const Chatbot: React.FC = () => {
 
   const presentFinalDiagnosis = (status: DiagnosisStatus, evidence: EvidenceAnalysis | null) => {
     if (status.message) {
-      addMessage(status.message, 'bot');
-    }
-
-    if (evidence) {
-      if (evidence.supporting_evidence.length > 0) {
-        addMessage('Supporting evidence:', 'bot');
-        evidence.supporting_evidence.forEach(item => {
-          addMessage(`• ${item.name}`, 'bot');
-        });
-      }
-
-      if (evidence.opposing_evidence.length > 0) {
-        addMessage('Factors that may not support this diagnosis:', 'bot');
-        evidence.opposing_evidence.forEach(item => {
-          addMessage(`• ${item.name}`, 'bot');
-        });
+      // First show the warning/disclaimer message
+      addMessage(
+        'Important: This is not a definitive diagnosis. Please consult with a healthcare provider ' +
+        'for a proper medical evaluation. They can perform a thorough examination and provide ' +
+        'appropriate treatment recommendations.',
+        'bot',
+        true
+      );
+      
+      // Only show condition if evidence exists and has condition data
+      if (evidence && evidence.condition && evidence.condition.name) {
+        addMessage(`Most likely condition: ${evidence.condition.name} (${evidence.condition.probability}%)`, 'bot');
       }
     }
-
-    addMessage(
-      'Important: This is not a definitive diagnosis. Please consult with a healthcare provider ' +
-      'for a proper medical evaluation. They can perform a thorough examination and provide ' +
-      'appropriate treatment recommendations.',
-      'bot',
-      true
-    );
-
-    addMessage(
-      'To start a new consultation, please refresh the page.',
-      'bot'
-    );
   };
 
   const handleApiError = (error: any) => {
@@ -455,49 +438,69 @@ const Chatbot: React.FC = () => {
   );
 
   const renderUserInfoStep = () => (
-    <div className="step-container user-info-step">
-      <h2 className="text-xl font-semibold mb-6">Tell us about yourself</h2>
+    <div className="step-container">
+      <div className="step-header">
+        <h2>Tell us about yourself</h2>
+        <p>Help us provide more accurate results</p>
+      </div>
       <div className="user-info-content">
         <div className="info-section">
-          <h3 className="text-blue-700 text-lg font-medium mb-4">Biological Sex</h3>
+          <h3>Biological Sex</h3>
           <div className="sex-selection">
-            <label className={`sex-option ${userInfo.sex === 'male' ? 'selected' : ''}`}>
+            <label
+              className={`sex-option ${userInfo.sex === 'male' ? 'selected' : ''}`}
+            >
               <input
                 type="radio"
                 name="sex"
                 value="male"
                 checked={userInfo.sex === 'male'}
-                onChange={(e) => setUserInfo(prev => ({ ...prev, sex: e.target.value as 'male' | 'female' }))}
+                onChange={(e) => setUserInfo(prev => ({
+                  ...prev,
+                  sex: e.target.value as 'male' | 'female'
+                }))}
               />
-              <FaMale className="icon text-blue-500" />
+              <div className="icon-wrapper">
+                <FaMale className="icon" />
+              </div>
               <span>Male</span>
             </label>
-            <label className={`sex-option ${userInfo.sex === 'female' ? 'selected' : ''}`}>
+            <label
+              className={`sex-option ${userInfo.sex === 'female' ? 'selected female' : ''}`}
+            >
               <input
                 type="radio"
                 name="sex"
                 value="female"
                 checked={userInfo.sex === 'female'}
-                onChange={(e) => setUserInfo(prev => ({ ...prev, sex: e.target.value as 'male' | 'female' }))}
+                onChange={(e) => setUserInfo(prev => ({
+                  ...prev,
+                  sex: e.target.value as 'male' | 'female'
+                }))}
               />
-              <FaFemale className="icon text-pink-500" />
+              <div className="icon-wrapper">
+                <FaFemale className="icon" />
+              </div>
               <span>Female</span>
             </label>
           </div>
         </div>
 
         <div className="info-section">
-          <h3 className="text-blue-700 text-lg font-medium mb-4">Your Age</h3>
+          <h3>Your Age</h3>
           <div className="age-input">
             <input
               type="number"
               min="0"
               max="120"
               value={userInfo.age || ''}
-              onChange={(e) => setUserInfo(prev => ({ ...prev, age: parseInt(e.target.value) || null }))}
-              className="w-32 px-4 py-2 rounded-lg border-2 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors"
+              onChange={(e) => setUserInfo(prev => ({
+                ...prev,
+                age: parseInt(e.target.value) || null
+              }))}
+              placeholder="Enter age"
             />
-            <span className="age-label text-gray-600">years old</span>
+            <span className="age-label">years old</span>
           </div>
         </div>
 
@@ -541,8 +544,8 @@ const Chatbot: React.FC = () => {
         className={`message ${message.sender === 'user' ? 'user-message' : 'bot-message'}`}
       >
         <div className={`p-3 rounded-lg ${message.sender === 'user'
-            ? 'bg-blue-500 text-white rounded-br-none ml-auto'
-            : 'bg-gray-50 border border-gray-200 rounded-bl-none mr-auto'
+          ? 'bg-blue-500 text-white rounded-br-none ml-auto'
+          : 'bg-gray-50 border border-gray-200 rounded-bl-none mr-auto'
           }`}>
           <p>{message.text}</p>
         </div>
@@ -638,17 +641,6 @@ const Chatbot: React.FC = () => {
         {step === 'userInfo' && renderUserInfoStep()}
         {(step === 'symptoms' || step === 'chat') && renderChat()}
 
-        {diagnosisStatus?.status === 'complete' && (
-          <div className="fixed bottom-4 right-4 max-w-sm bg-green-50 border border-green-200 p-4 rounded-lg shadow-lg">
-            <div className="flex items-start gap-3">
-              <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-              <div>
-                <h4 className="font-medium text-green-800 mb-1">Analysis Complete</h4>
-                <p className="text-sm text-green-700">{diagnosisStatus.message}</p>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
