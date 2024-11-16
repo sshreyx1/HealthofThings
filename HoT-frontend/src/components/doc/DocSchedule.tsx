@@ -15,10 +15,32 @@ import {
     RefreshCw,
     Users,
     ChevronLeft,
-    ChevronRight
+    ChevronRight,
+    Info,
+    XCircle,
+    Ban
 } from 'lucide-react';
 import DocSidebar from './DocSidebar';
 import './DocSchedule.css';
+
+type AppointmentType = 'Surgery' | 'Consultation' | 'Follow-up' | 'Emergency' | 'Pending';
+type AppointmentStatus = 'Scheduled' | 'Pending' | 'Completed' | 'Cancelled';
+type AppointmentPriority = 'Normal' | 'Urgent' | 'Critical';
+
+interface PatientVitals {
+    heartRate: number;
+    temperature: number;
+    bloodPressure: string;
+    spO2: number;
+}
+
+interface Patient {
+    id: string;
+    name: string;
+    age: number;
+    condition?: string;
+    vitals?: PatientVitals;
+}
 
 interface Appointment {
     id: number;
@@ -26,21 +48,10 @@ interface Appointment {
     date: string;
     time: string;
     location: string;
-    patient: {
-        id: string;
-        name: string;
-        age: number;
-        condition?: string;
-        vitals?: {
-            heartRate: number;
-            temperature: number;
-            bloodPressure: string;
-            spO2: number;
-        }
-    };
-    type: 'Surgery' | 'Consultation' | 'Follow-up' | 'Emergency' | 'Pending';
-    status: 'Scheduled' | 'Pending' | 'Completed' | 'Cancelled';
-    priority: 'Normal' | 'Urgent' | 'Critical';
+    patient: Patient;
+    type: AppointmentType;
+    status: AppointmentStatus;
+    priority: AppointmentPriority;
     notes?: string;
     duration: number;
 }
@@ -48,96 +59,129 @@ interface Appointment {
 interface PopupPosition {
     x: number;
     y: number;
-    position: string;
 }
 
-const DocSchedule: React.FC = () => {
-    const mockAppointments: Array<Appointment> = [
-        {
-            id: 1,
-            title: "Cardiac Surgery",
-            date: "2024-11-05",
-            time: "09:30",
-            location: "OR 302",
-            patient: {
-                id: "P001",
-                name: "John Doe",
-                age: 45,
-                condition: "Coronary Artery Disease",
-                vitals: {
-                    heartRate: 92,
-                    temperature: 38.2,
-                    bloodPressure: "140/90",
-                    spO2: 95
-                }
-            },
-            type: "Surgery",
-            status: "Scheduled",
-            priority: "Critical",
-            notes: "Pre-op assessment completed",
-            duration: 180
-        },
-        {
-            id: 2,
-            title: "Post-Op Follow-up",
-            date: "2024-11-12",
-            time: "14:15",
-            location: "Clinic Room 205",
-            patient: {
-                id: "P002",
-                name: "Jane Smith",
-                age: 52,
-                condition: "Post Cardiac Surgery",
-                vitals: {
-                    heartRate: 78,
-                    temperature: 37.1,
-                    bloodPressure: "130/85",
-                    spO2: 98
-                }
-            },
-            type: "Follow-up",
-            status: "Scheduled",
-            priority: "Normal",
-            duration: 30
-        },
-        {
-            id: 3,
-            title: "Emergency Consultation",
-            date: "2024-11-15",
-            time: "16:00",
-            location: "Emergency Department",
-            patient: {
-                id: "P003",
-                name: "Robert Johnson",
-                age: 68,
-                condition: "Acute Chest Pain",
-                vitals: {
-                    heartRate: 105,
-                    temperature: 37.8,
-                    bloodPressure: "160/95",
-                    spO2: 94
-                }
-            },
-            type: "Emergency",
-            status: "Scheduled",
-            priority: "Urgent",
-            notes: "Immediate evaluation needed",
-            duration: 45
-        }
-    ];
+interface TypeBadgeProps {
+    type: AppointmentType | string;
+}
 
+interface PriorityBadgeProps {
+    priority: AppointmentPriority | string;
+}
+
+const mockAppointments: Appointment[] = [
+    {
+        id: 1,
+        title: "Cardiac Surgery",
+        date: "2024-11-05",
+        time: "09:30",
+        location: "OR 302",
+        patient: {
+            id: "P001",
+            name: "John Doe",
+            age: 45,
+            condition: "Coronary Artery Disease",
+            vitals: {
+                heartRate: 92,
+                temperature: 38.2,
+                bloodPressure: "140/90",
+                spO2: 95
+            }
+        },
+        type: "Surgery",
+        status: "Scheduled",
+        priority: "Critical",
+        notes: "Pre-op assessment completed",
+        duration: 180
+    },
+    {
+        id: 2,
+        title: "Post-Op Follow-up",
+        date: "2024-11-12",
+        time: "14:15",
+        location: "Clinic Room 205",
+        patient: {
+            id: "P002",
+            name: "Jane Smith",
+            age: 52,
+            condition: "Post Cardiac Surgery",
+            vitals: {
+                heartRate: 78,
+                temperature: 37.1,
+                bloodPressure: "130/85",
+                spO2: 98
+            }
+        },
+        type: "Follow-up",
+        status: "Scheduled",
+        priority: "Normal",
+        duration: 30
+    },
+    {
+        id: 3,
+        title: "Emergency Consultation",
+        date: "2024-11-15",
+        time: "16:00",
+        location: "Emergency Department",
+        patient: {
+            id: "P003",
+            name: "Robert Johnson",
+            age: 68,
+            condition: "Acute Chest Pain",
+            vitals: {
+                heartRate: 105,
+                temperature: 37.8,
+                bloodPressure: "160/95",
+                spO2: 94
+            }
+        },
+        type: "Emergency",
+        status: "Scheduled",
+        priority: "Urgent",
+        notes: "Immediate evaluation needed",
+        duration: 45
+    },
+    {
+        id: 4,
+        title: "New Patient Consultation",
+        date: "2024-11-20",
+        time: "10:00",
+        location: "Clinic Room 103",
+        patient: {
+            id: "P004",
+            name: "Sarah Williams",
+            age: 35,
+            condition: "Chest Pain Investigation",
+            vitals: {
+                heartRate: 82,
+                temperature: 36.9,
+                bloodPressure: "125/80",
+                spO2: 98
+            }
+        },
+        type: "Consultation",
+        status: "Pending",
+        priority: "Normal",
+        duration: 45
+    }
+];
+
+const DocSchedule: React.FC = () => {
     const [currentDate, setCurrentDate] = useState<Date>(new Date());
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-    const [popupPosition, setPopupPosition] = useState<PopupPosition>({ x: 0, y: 0, position: '' });
-    const [appointments, setAppointments] = useState<Array<Appointment>>(mockAppointments);
-    const [pendingAppointments, setPendingAppointments] = useState<Array<Appointment>>(
+    const [popupPosition, setPopupPosition] = useState<PopupPosition>({ x: 0, y: 0 });
+    const [appointments, setAppointments] = useState<Appointment[]>(
+        mockAppointments.filter(apt => apt.status === 'Scheduled')
+    );
+    const [pendingAppointments, setPendingAppointments] = useState<Appointment[]>(
         mockAppointments.filter(apt => apt.status === 'Pending')
     );
     const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
-    const [showRightPanel, setShowRightPanel] = useState(false);
+    const [showRightPanel, setShowRightPanel] = useState<boolean>(false);
     const [rightPanelContent, setRightPanelContent] = useState<'pending' | 'reschedule' | null>(null);
     const [rescheduleDate, setRescheduleDate] = useState<string>('');
     const [rescheduleTime, setRescheduleTime] = useState<string>('');
+
     const popupRef = useRef<HTMLDivElement>(null);
     const calendarContainerRef = useRef<HTMLDivElement>(null);
 
@@ -178,6 +222,39 @@ const DocSchedule: React.FC = () => {
         return () => clearInterval(interval);
     }, []);
 
+    const handleDayClick = (date: Date, event: React.MouseEvent<HTMLDivElement>) => {
+        const targetElement = event.target as HTMLElement;
+        if (targetElement.closest('.empty')) {
+            return;
+        }
+
+        const cell = event.currentTarget;
+        const rect = cell.getBoundingClientRect();
+        const container = calendarContainerRef.current?.getBoundingClientRect();
+
+        if (!container) return;
+
+        setShowRightPanel(false);
+
+        let x = rect.right + 16;
+        let y = rect.top;
+
+        // Adjust position if popup would go outside container
+        if (x + 340 > container.right) {
+            x = rect.left - 356; // 340px width + 16px gap
+        }
+
+        // Ensure popup stays within vertical bounds
+        const maxHeight = 600;
+        if (y + maxHeight > container.bottom) {
+            y = container.bottom - maxHeight;
+        }
+        y = Math.max(container.top, y);
+
+        setPopupPosition({ x, y });
+        setSelectedDate(date);
+    };
+
     const handleOpenPanel = (panelType: 'pending' | 'reschedule', appointment?: Appointment) => {
         if (appointment) {
             setSelectedAppointment(appointment);
@@ -186,6 +263,7 @@ const DocSchedule: React.FC = () => {
         }
         setRightPanelContent(panelType);
         setShowRightPanel(true);
+        setSelectedDate(null);
     };
 
     const handleClosePanel = () => {
@@ -207,6 +285,11 @@ const DocSchedule: React.FC = () => {
     const handleDeclineAppointment = (appointment: Appointment) => {
         setPendingAppointments(prev => prev.filter(apt => apt.id !== appointment.id));
         handleClosePanel();
+    };
+
+    const handleCancelAppointment = (appointment: Appointment) => {
+        setAppointments(prev => prev.filter(apt => apt.id !== appointment.id));
+        setSelectedDate(null);
     };
 
     const handleConfirmReschedule = () => {
@@ -235,35 +318,32 @@ const DocSchedule: React.FC = () => {
         }
     };
 
-    const getDayAppointments = (dateString: string): Array<Appointment> => {
+    const getDayAppointments = (dateString: string): Appointment[] => {
         return appointments.filter(apt => apt.date === dateString);
     };
 
-    const handleDayClick = (date: Date, event: React.MouseEvent) => {
-        if ((event.target as HTMLElement).closest('.empty')) {
-            return;
-        }
+    const TypeBadge: React.FC<TypeBadgeProps> = ({ type }) => (
+        <span className={`type-badge ${type.toLowerCase()}`}>
+            {type}
+        </span>
+    );
 
-        const cell = event.currentTarget as HTMLElement;
-        const rect = cell.getBoundingClientRect();
-        const container = calendarContainerRef.current?.getBoundingClientRect();
+    const PriorityBadge: React.FC<PriorityBadgeProps> = ({ priority }) => (
+        <span className={`priority-badge ${priority.toLowerCase()}`}>
+            {priority}
+        </span>
+    );
 
-        if (!container) return;
+    const monthNames = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ];
 
-        const popupHeight = 400;
-        const availableSpace = showRightPanel ? container.right - 380 - rect.right : container.right - rect.right;
-
-        let x = rect.right + 16;
-        let y = Math.max(container.top, Math.min(rect.top, container.bottom - popupHeight));
-        let position = 'right';
-
-        if (availableSpace < 340) {
-            x = rect.left - 336;
-            position = 'left';
-        }
-
-        setPopupPosition({ x, y, position });
-        setSelectedDate(date);
+    const navigateMonth = (direction: number) => {
+        const newDate = new Date(currentDate);
+        newDate.setMonth(newDate.getMonth() + direction);
+        setCurrentDate(newDate);
+        setSelectedDate(null);
     };
 
     const generateCalendarDays = () => {
@@ -273,18 +353,21 @@ const DocSchedule: React.FC = () => {
         const firstDay = new Date(year, month, 1);
         const lastDay = new Date(year, month + 1, 0);
         const daysInMonth = lastDay.getDate();
-
-        const days = [];
         const startingDay = firstDay.getDay();
 
+        const days: JSX.Element[] = [];
+
+        // Add previous month's days
         for (let i = startingDay - 1; i >= 0; i--) {
+            const prevMonthDay = new Date(year, month, -i);
             days.push(
                 <div key={`prev-${i}`} className="calendar-day empty">
-                    <span className="day-number faded">{new Date(year, month, -i).getDate()}</span>
+                    <span className="day-number faded">{prevMonthDay.getDate()}</span>
                 </div>
             );
         }
 
+        // Add current month's days
         for (let day = 1; day <= daysInMonth; day++) {
             const date = new Date(year, month, day);
             const dateString = date.toISOString().split('T')[0];
@@ -295,7 +378,7 @@ const DocSchedule: React.FC = () => {
 
             days.push(
                 <div
-                    key={day}
+                    key={`current-${day}`}
                     className={`calendar-day 
                         ${dayAppointments.length > 0 ? 'has-appointment' : ''} 
                         ${hasUrgent ? 'has-urgent' : ''} 
@@ -325,7 +408,8 @@ const DocSchedule: React.FC = () => {
             );
         }
 
-        const remainingDays = 42 - days.length;
+        // Add just enough days from next month to complete the last week
+        const remainingDays = (7 - ((days.length) % 7)) % 7;
         for (let i = 1; i <= remainingDays; i++) {
             days.push(
                 <div key={`next-${i}`} className="calendar-day empty">
@@ -337,17 +421,7 @@ const DocSchedule: React.FC = () => {
         return days;
     };
 
-    const monthNames = [
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
-    ];
-
-    const navigateMonth = (direction: number) => {
-        setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() + direction)));
-        setSelectedDate(null);
-    };
-
-    const RightPanel = () => {
+    const RightPanel: React.FC = () => {
         if (!showRightPanel || !rightPanelContent) return null;
 
         return (
@@ -356,79 +430,82 @@ const DocSchedule: React.FC = () => {
                     <h3>
                         {rightPanelContent === 'pending' ? 'Pending Requests' : 'Reschedule Appointment'}
                     </h3>
-                    <button className="panel-close-button" onClick={handleClosePanel}>
-                        <X size={20} />
+                    <button className="close-button" onClick={handleClosePanel}>
+                        <XCircle size={32} />
                     </button>
                 </div>
+
                 <div className="right-panel-content">
                     {rightPanelContent === 'pending' ? (
                         pendingAppointments.length > 0 ? (
-                            pendingAppointments.map(appointment => (
-                                <div key={appointment.id} className="pending-appointment-card">
-                                    <div className="appointment-header">
-                                        <div className="appointment-header-left">
-                                            <h4>{appointment.title}</h4>
-                                            <span className={`appointment-type ${appointment.type.toLowerCase()}`}>
-                                                {appointment.type}
-                                            </span>
-                                        </div>
-                                        <span className={`appointment-priority ${appointment.priority.toLowerCase()}`}>
-                                            {appointment.priority}
-                                        </span>
-                                    </div>
-                                    <div className="appointment-details">
-                                        <div className="detail-item">
-                                            <Calendar size={16} />
-                                            <span>{new Date(appointment.date).toLocaleDateString()}</span>
-                                        </div>
-                                        <div className="detail-item">
-                                            <Clock size={16} />
-                                            <span>{appointment.time} ({appointment.duration} mins)</span>
-                                        </div>
-                                        <div className="detail-item">
-                                            <User size={16} />
-                                            <span>{appointment.patient.name}, {appointment.patient.age} yrs</span>
-                                        </div>
-                                        {appointment.patient.condition && (
-                                            <div className="detail-item">
-                                                <AlertTriangle size={16} />
-                                                <span>{appointment.patient.condition}</span>
+                            <div className="pending-appointments-list">
+                                {pendingAppointments.map(appointment => (
+                                    <div key={appointment.id} className="pending-card">
+                                        <div className="pending-card-header">
+                                            <div className="pending-card-title">
+                                                <h4>{appointment.title}</h4>
+                                                <div className="pending-card-badges">
+                                                    <TypeBadge type={appointment.type} />
+                                                    <PriorityBadge priority={appointment.priority} />
+                                                </div>
                                             </div>
-                                        )}
-                                        {appointment.notes && (
-                                            <div className="detail-item notes">
-                                                <CalendarIcon size={16} />
-                                                <span>{appointment.notes}</span>
+                                        </div>
+
+                                        <div className="pending-card-details">
+                                            <div className="detail-row">
+                                                <Clock size={16} />
+                                                <span>{appointment.date} at {appointment.time}</span>
                                             </div>
-                                        )}
+                                            <div className="detail-row">
+                                                <MapPin size={16} />
+                                                <span>{appointment.location}</span>
+                                            </div>
+                                            <div className="detail-row">
+                                                <User size={16} />
+                                                <span>{appointment.patient.name}, {appointment.patient.age} yrs</span>
+                                            </div>
+                                            {appointment.patient.condition && (
+                                                <div className="detail-row condition">
+                                                    <AlertTriangle size={16} />
+                                                    <span>{appointment.patient.condition}</span>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <div className="pending-card-actions">
+                                            <button
+                                                className="icon-button accept"
+                                                title="Accept"
+                                                onClick={() => handleAcceptAppointment(appointment)}
+                                            >
+                                                <Check size={20} />
+                                                <span>Accept</span>
+                                            </button>
+                                            <button
+                                                className="icon-button reschedule"
+                                                title="Reschedule"
+                                                onClick={() => handleOpenPanel('reschedule', appointment)}
+                                            >
+                                                <RefreshCw size={20} />
+                                                <span>Reschedule</span>
+                                            </button>
+                                            <button
+                                                className="icon-button decline"
+                                                title="Decline"
+                                                onClick={() => handleDeclineAppointment(appointment)}
+                                            >
+                                                <X size={20} />
+                                                <span>Decline</span>
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div className="action-buttons">
-                                        <button
-                                            className="accept-button"
-                                            onClick={() => handleAcceptAppointment(appointment)}
-                                        >
-                                            <Check size={16} />
-                                            Accept
-                                        </button>
-                                        <button
-                                            className="reschedule-button"
-                                            onClick={() => handleOpenPanel('reschedule', appointment)}
-                                        >
-                                            <RefreshCw size={16} />
-                                            Reschedule
-                                        </button>
-                                        <button
-                                            className="decline-button"
-                                            onClick={() => handleDeclineAppointment(appointment)}
-                                        >
-                                            <X size={16} />
-                                            Decline
-                                        </button>
-                                    </div>
-                                </div>
-                            ))
+                                ))}
+                            </div>
                         ) : (
-                            <p className="no-pending">No pending appointment requests</p>
+                            <div className="no-pending">
+                                <Info size={48} />
+                                <p>No pending appointment requests</p>
+                            </div>
                         )
                     ) : (
                         <div className="reschedule-form">
@@ -440,6 +517,7 @@ const DocSchedule: React.FC = () => {
                                     value={rescheduleDate}
                                     onChange={(e) => setRescheduleDate(e.target.value)}
                                     min={new Date().toISOString().split('T')[0]}
+                                    className="date-input"
                                 />
                             </div>
                             <div className="form-group">
@@ -449,20 +527,38 @@ const DocSchedule: React.FC = () => {
                                     id="time"
                                     value={rescheduleTime}
                                     onChange={(e) => setRescheduleTime(e.target.value)}
+                                    className="time-input"
                                 />
                             </div>
+                            {selectedAppointment && (
+                                <div className="reschedule-summary">
+                                    <h4>Appointment Details</h4>
+                                    <div className="summary-row">
+                                        <span className="label">Patient:</span>
+                                        <span>{selectedAppointment.patient.name}</span>
+                                    </div>
+                                    <div className="summary-row">
+                                        <span className="label">Type:</span>
+                                        <TypeBadge type={selectedAppointment.type} />
+                                    </div>
+                                    <div className="summary-row">
+                                        <span className="label">Priority:</span>
+                                        <PriorityBadge priority={selectedAppointment.priority} />
+                                    </div>
+                                    <div className="summary-row">
+                                        <span className="label">Duration:</span>
+                                        <span>{selectedAppointment.duration} mins</span>
+                                    </div>
+                                </div>
+                            )}
                             <div className="action-buttons">
-                                <button
-                                    className="decline-button"
-                                    onClick={handleClosePanel}
-                                >
-                                    Cancel
+                                <button className="cancel-button" onClick={handleClosePanel}>
+                                    <X size={20} />
+                                    <span>Cancel</span>
                                 </button>
-                                <button
-                                    className="accept-button"
-                                    onClick={handleConfirmReschedule}
-                                >
-                                    Confirm
+                                <button className="confirm-button" onClick={handleConfirmReschedule}>
+                                    <Check size={20} />
+                                    <span>Confirm</span>
                                 </button>
                             </div>
                         </div>
@@ -544,9 +640,9 @@ const DocSchedule: React.FC = () => {
                     </div>
                 </div>
 
-                {selectedDate && (
+                {selectedDate && !showRightPanel && (
                     <div
-                        className={`appointments-popup ${popupPosition.position}`}
+                        className="appointments-popup"
                         ref={popupRef}
                         style={{
                             top: popupPosition.y,
@@ -559,7 +655,7 @@ const DocSchedule: React.FC = () => {
                                 className="close-button"
                                 onClick={() => setSelectedDate(null)}
                             >
-                                <X size={16} />
+                                <XCircle size={32} />
                             </button>
                         </div>
                         <div className="popup-content">
@@ -573,48 +669,44 @@ const DocSchedule: React.FC = () => {
                                         <div className="appointment-header">
                                             <div className="appointment-header-left">
                                                 <h4>{appointment.title}</h4>
-                                                <span className={`appointment-type ${appointment.type.toLowerCase()}`}>
-                                                    {appointment.type}
-                                                </span>
+                                                <TypeBadge type={appointment.type} />
                                             </div>
-                                            <span className={`appointment-priority ${appointment.priority.toLowerCase()}`}>
-                                                {appointment.priority}
-                                            </span>
+                                            <PriorityBadge priority={appointment.priority} />
                                         </div>
                                         <div className="appointment-details">
                                             <div className="detail-item">
                                                 <Clock size={16} />
-                                                {appointment.time} ({appointment.duration} mins)
+                                                <span>{appointment.time} ({appointment.duration} mins)</span>
                                             </div>
                                             <div className="detail-item">
                                                 <MapPin size={16} />
-                                                {appointment.location}
+                                                <span>{appointment.location}</span>
                                             </div>
                                             <div className="detail-item">
                                                 <User size={16} />
-                                                {appointment.patient.name}, {appointment.patient.age} yrs
+                                                <span>{appointment.patient.name}, {appointment.patient.age} yrs</span>
                                             </div>
                                             {appointment.patient.condition && (
-                                                <div className="detail-item">
+                                                <div className="detail-item condition">
                                                     <AlertTriangle size={16} />
-                                                    {appointment.patient.condition}
+                                                    <span>{appointment.patient.condition}</span>
                                                 </div>
                                             )}
                                             {appointment.patient.vitals && (
                                                 <div className="patient-vitals">
-                                                    <div className={`vital-item ${appointment.patient.vitals.heartRate > 100 ? 'warning' : ''
-                                                        }`}>
+                                                    <div className={`vital-item ${appointment.patient.vitals.heartRate > 100 ? 'warning' : ''}`}
+                                                    >
                                                         HR: {Math.round(appointment.patient.vitals.heartRate)} bpm
                                                     </div>
                                                     <div className="vital-item">
                                                         BP: {appointment.patient.vitals.bloodPressure}
                                                     </div>
-                                                    <div className={`vital-item ${appointment.patient.vitals.temperature > 38.5 ? 'warning' : ''
-                                                        }`}>
+                                                    <div className={`vital-item ${appointment.patient.vitals.temperature > 38.5 ? 'warning' : ''}`}
+                                                    >
                                                         Temp: {appointment.patient.vitals.temperature.toFixed(1)}°C
                                                     </div>
-                                                    <div className={`vital-item ${appointment.patient.vitals.spO2 < 95 ? 'warning' : ''
-                                                        }`}>
+                                                    <div className={`vital-item ${appointment.patient.vitals.spO2 < 95 ? 'warning' : ''}`}
+                                                    >
                                                         SpO2: {Math.round(appointment.patient.vitals.spO2)}%
                                                     </div>
                                                 </div>
@@ -622,16 +714,25 @@ const DocSchedule: React.FC = () => {
                                             {appointment.notes && (
                                                 <div className="detail-item notes">
                                                     <CalendarIcon size={16} />
-                                                    {appointment.notes}
+                                                    <span>{appointment.notes}</span>
                                                 </div>
                                             )}
-                                            <div className="action-buttons">
+                                            <div className="appointment-actions">
                                                 <button
-                                                    className="reschedule-button"
+                                                    className="icon-button reschedule"
+                                                    title="Reschedule"
                                                     onClick={() => handleOpenPanel('reschedule', appointment)}
                                                 >
-                                                    <RefreshCw size={16} />
-                                                    Reschedule
+                                                    <RefreshCw size={20} />
+                                                    <span>Reschedule</span>
+                                                </button>
+                                                <button
+                                                    className="icon-button cancel"
+                                                    title="Cancel Appointment"
+                                                    onClick={() => handleCancelAppointment(appointment)}
+                                                >
+                                                    <Ban size={20} />
+                                                    <span>Cancel</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -649,5 +750,4 @@ const DocSchedule: React.FC = () => {
         </div>
     );
 };
-
 export default DocSchedule;

@@ -21,6 +21,10 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.heart-icon {
+    color: white;
+}
+
 .logo {
     width: 32px;
     height: 32px;
@@ -31,7 +35,7 @@
     font-size: 1.2rem;
     font-weight: 600;
     color: white;
-    padding-left: 20px;
+    padding-left: 10px;
     padding-top: 5px;
 }
 
@@ -80,11 +84,12 @@
 }
 
 .nav-item:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
 }
 
 .nav-item.active {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.3);
     font-weight: 500;
 }
 
@@ -95,29 +100,33 @@
 .sidebar-footer {
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     padding-top: 16px;
+}
+
+.logout-container {
     display: flex;
-    flex-direction: column;
-    gap: 8px;
+    justify-content: center;
+    width: 100%;
 }
 
 .logout-button {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 12px;
-    padding: 12px;
+    padding: 12px 24px;
     background: rgba(255, 255, 255, 0.1);
     border: none;
     color: white;
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s;
-    width: 100%;
-    text-align: left;
     font-size: 0.9rem;
+    width: auto;
+    min-width: 120px;
 }
 
 .logout-button:hover {
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.25);
 }
 
 @media (max-width: 768px) {
@@ -147,5 +156,11 @@
         position: absolute;
         top: 4px;
         right: 4px;
+    }
+
+    .logout-button {
+        min-width: unset;
+        width: 40px;
+        padding: 12px;
     }
 }

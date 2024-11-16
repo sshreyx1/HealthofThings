@@ -14,7 +14,8 @@
 }
 
 .docalert-main {
-    max-width: 1200px;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
 .docalert-header {
@@ -24,11 +25,21 @@
     margin-bottom: 24px;
 }
 
+.docalert-title-section {
+    flex: 1;
+}
+
 .docalert-title {
     margin: 0;
-    color: #333;
-    font-size: 1.75rem;
+    color: #1e293b;
+    font-size: 24px;
     font-weight: 600;
+}
+
+.docalert-subtitle {
+    color: #64748b;
+    font-size: 14px;
+    margin: 4px 0 0;
 }
 
 .docalert-controls {
@@ -37,39 +48,121 @@
     gap: 16px;
 }
 
-.docalert-filter {
-    display: flex;
-    align-items: center;
-    background: white;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 8px 12px;
-}
-
-.docalert-filter svg {
-    color: #666;
-    margin-right: 8px;
-}
-
-.docalert-select {
-    border: none;
-    outline: none;
-    font-size: 0.9rem;
-    color: #333;
-    background: none;
-    cursor: pointer;
-    min-width: 120px;
-}
-
 .docalert-unread-count {
-    font-size: 0.9rem;
-    color: #666;
-    background: white;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
     padding: 8px 16px;
     border-radius: 8px;
-    border: 1px solid #e0e0e0;
+    font-size: 14px;
+    color: #64748b;
 }
 
+.docalert-add-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.docalert-add-button:hover {
+    background-color: #1d4ed8;
+}
+
+.docalert-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 24px;
+}
+
+/* Sidebar Styles */
+.docalert-sidebar {
+    background-color: white;
+    border-radius: 8px;
+    padding: 16px;
+    height: fit-content;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.docalert-filter-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.docalert-filter-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+}
+
+.docalert-search-box {
+    position: relative;
+}
+
+.docalert-search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #64748b;
+}
+
+.docalert-search-input {
+    width: 100%;
+    padding: 8px 12px 8px 36px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.docalert-search-input:focus {
+    border-color: #2563eb;
+}
+
+.docalert-category-filters {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.docalert-category-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border: none;
+    background: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #64748b;
+    font-size: 14px;
+    text-align: left;
+    transition: all 0.2s;
+}
+
+.docalert-category-button:hover {
+    background-color: #f1f5f9;
+    color: #1e293b;
+}
+
+.docalert-category-button.active {
+    background-color: #f1f5f9;
+    color: #2563eb;
+    font-weight: 500;
+}
+
+/* Alert List Styles */
 .docalert-list {
     display: flex;
     flex-direction: column;
@@ -77,9 +170,9 @@
 }
 
 .docalert-card {
+    background-color: white;
     border-radius: 12px;
     padding: 16px;
-    background: white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     transition: all 0.2s ease;
 }
@@ -89,20 +182,28 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+.docalert-card.unread {
+    border-left: 3px solid #2563eb;
+}
+
 .docalert-card.unread.critical {
-    background-color: #ffebee;
+    background-color: #fef2f2;
+    border-left-color: #ef4444;
 }
 
 .docalert-card.unread.warning {
-    background-color: #fff3e0;
+    background-color: #fff7ed;
+    border-left-color: #f59e0b;
 }
 
 .docalert-card.unread.appointment {
-    background-color: #e3f2fd;
+    background-color: #eff6ff;
+    border-left-color: #2563eb;
 }
 
 .docalert-card.unread.message {
-    background-color: #e8f5e9;
+    background-color: #f0fdf4;
+    border-left-color: #10b981;
 }
 
 .docalert-card-content {
@@ -111,10 +212,21 @@
     gap: 16px;
 }
 
-.docalert-icon-critical { color: #f44336; }
-.docalert-icon-warning { color: #ff9800; }
-.docalert-icon-appointment { color: #2196f3; }
-.docalert-icon-message { color: #4caf50; }
+.docalert-icon-critical {
+    color: #ef4444;
+}
+
+.docalert-icon-warning {
+    color: #f59e0b;
+}
+
+.docalert-icon-appointment {
+    color: #2563eb;
+}
+
+.docalert-icon-message {
+    color: #10b981;
+}
 
 .docalert-card-main {
     flex-grow: 1;
@@ -126,20 +238,24 @@
     align-items: flex-start;
 }
 
+.docalert-card-title-group {
+    flex: 1;
+}
+
 .docalert-card-title {
     margin: 0;
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: #333;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
 }
 
 .docalert-card-patient {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
     margin: 4px 0;
-    color: #666;
-    font-size: 0.9rem;
+    color: #64748b;
+    font-size: 14px;
 }
 
 .docalert-card-actions {
@@ -157,80 +273,161 @@
 }
 
 .docalert-read-button {
-    color: #9e9e9e;
+    color: #94a3b8;
 }
 
 .docalert-read-button:hover {
-    color: #4caf50;
+    color: #10b981;
+    background-color: #f1f5f9;
 }
 
 .docalert-delete-button {
-    color: #9e9e9e;
+    color: #94a3b8;
 }
 
 .docalert-delete-button:hover {
-    color: #f44336;
+    color: #ef4444;
+    background-color: #f1f5f9;
 }
 
 .docalert-card-message {
     margin: 8px 0;
-    color: #555;
-    font-size: 0.95rem;
+    color: #475569;
+    font-size: 14px;
+    line-height: 1.5;
 }
 
 .docalert-card-timestamp {
     display: flex;
     align-items: center;
-    gap: 4px;
-    color: #666;
-    font-size: 0.85rem;
+    gap: 6px;
+    color: #94a3b8;
+    font-size: 12px;
     margin-top: 8px;
+}
+
+/* Custom Scrollbar */
+.docalert-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.docalert-content::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
+}
+
+.docalert-content::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 3px;
+}
+
+.docalert-content::-webkit-scrollbar-thumb:hover {
+    background-color: #94a3b8;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .docalert-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .docalert-sidebar {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    .docalert-content {
+        margin-left: 60px;
+    }
 }
 
 @media (max-width: 768px) {
     .docalert-content {
-        margin-left: 60px;
         padding: 16px;
+        margin-left: 0;
     }
-    
-    .docalert-card-content {
-        flex-direction: column;
-    }
-    
+
     .docalert-header {
         flex-direction: column;
         align-items: flex-start;
-        gap: 8px;
+        gap: 16px;
     }
 
     .docalert-controls {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .docalert-card-content {
         flex-direction: column;
-        width: 100%;
+        gap: 12px;
     }
 
-    .docalert-filter {
-        width: 100%;
+    .docalert-unread-count {
+        display: none;
     }
 
-    .docalert-select {
+    .docalert-category-filters {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 8px;
+    }
+
+    .docalert-card-header {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .docalert-card-actions {
         width: 100%;
+        justify-content: flex-end;
     }
 }
 
-.docalert-content::-webkit-scrollbar {
-    width: 8px;
+/* Focus States */
+.docalert-search-input:focus-visible,
+.docalert-category-button:focus-visible,
+.docalert-action-button:focus-visible,
+.docalert-add-button:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
 }
 
-.docalert-content::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
+/* Animation for new alerts */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.docalert-content::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 4px;
+.docalert-card {
+    animation: slideIn 0.3s ease-out;
 }
 
-.docalert-content::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
+/* Print styles */
+@media print {
+
+    .docalert-sidebar,
+    .docalert-controls,
+    .docalert-action-button {
+        display: none;
+    }
+
+    .docalert-content {
+        margin: 0;
+        padding: 0;
+    }
+
+    .docalert-card {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #e2e8f0;
+    }
 }

@@ -11,7 +11,8 @@ import {
     MessageSquare,
     Bell,
     Settings,
-    LogOut
+    LogOut,
+    HeartPulse
 } from 'lucide-react';
 
 const DocSidebar: React.FC = () => {
@@ -27,16 +28,17 @@ const DocSidebar: React.FC = () => {
     return (
         <div className="doc-sidebar">
             <div className="sidebar-header">
+                <HeartPulse size={24} className="heart-icon" />
                 <h1>HealthofThings</h1>
             </div>
 
             <nav className="sidebar-nav">
-            <Link
+                <Link
                     to="/docalerts"
                     className={`nav-item ${location.pathname === '/docalerts' ? 'active' : ''}`}
                 >
                     <Bell size={20} />
-                    <span>Alerts & Notifications</span>
+                    <span>Alerts</span>
                 </Link>
                 <Link
                     to="/docdashboard"
@@ -63,30 +65,6 @@ const DocSidebar: React.FC = () => {
                 </Link>
 
                 <Link
-                    to="/docdiagnosis"
-                    className={`nav-item ${location.pathname === '/docdiagnosis' ? 'active' : ''}`}
-                >
-                    <Activity size={20} />
-                    <span>Diagnosis</span>
-                </Link>
-
-                <Link
-                    to="/doctreatment"
-                    className={`nav-item ${location.pathname === '/doctreatment' ? 'active' : ''}`}
-                >
-                    <Stethoscope size={20} />
-                    <span>Treatment</span>
-                </Link>
-
-                <Link
-                    to="/docanalytics"
-                    className={`nav-item ${location.pathname === '/docanalytics' ? 'active' : ''}`}
-                >
-                    <BarChart2 size={20} />
-                    <span>Analytics</span>
-                </Link>
-
-                <Link
                     to="/docconsult"
                     className={`nav-item ${location.pathname === '/docchat' ? 'active' : ''}`}
                 >
@@ -96,15 +74,12 @@ const DocSidebar: React.FC = () => {
             </nav>
 
             <div className="sidebar-footer">
-                <Link to="/docsettings" className="nav-item">
-                    <Settings size={20} />
-                    <span>Settings</span>
-                </Link>
-
-                <button className="logout-button" onClick={handleLogout}>
-                    <LogOut size={20} />
-                    <span>Logout</span>
-                </button>
+                <div className="logout-container">
+                    <button className="logout-button" onClick={handleLogout}>
+                        <LogOut size={20} />
+                        <span>Logout</span>
+                    </button>
+                </div>
             </div>
         </div>
     );

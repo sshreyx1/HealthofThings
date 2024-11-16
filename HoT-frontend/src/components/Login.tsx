@@ -34,7 +34,7 @@ const Login = () => {
         if (selectedRole === 'doctor' && username === 'doctor' && password === 'password') {
             localStorage.setItem('authToken', 'dummy_token');
             localStorage.setItem('userRole', selectedRole);
-            navigate('/docalerts');
+            navigate('/docdashboard');
         } else if (selectedRole === 'patient' && username === 'patient' && password === 'password') {
             localStorage.setItem('authToken', 'dummy_token');
             localStorage.setItem('userRole', selectedRole);

@@ -583,10 +583,6 @@ const DocPatients: React.FC = () => {
                 <div className="dashboard-header">
                     <div className="header-top">
                         <h1>Patient Management</h1>
-                        <button className="refresh-button">
-                            <RefreshCw size={20} />
-                            Refresh Data
-                        </button>
                     </div>
 
                     <div className="header-controls">
@@ -657,15 +653,19 @@ const DocPatients: React.FC = () => {
                                                     <h4>{patient.name}</h4>
                                                     <p>{patient.condition}</p>
                                                 </div>
-                                                <div className="vital-indicators">
-                                                    <span className="vital">
-                                                        <Heart size={14} />
-                                                        {Math.round(patient.vitals.heartRate)} bpm
-                                                    </span>
-                                                    <span className="vital">
-                                                        <Droplet size={14} />
-                                                        {Math.round(patient.vitals.spO2)}%
-                                                    </span>
+                                                <div className="remote-vitals">
+                                                    <div className="vital-item">
+                                                        <Heart size={16} />
+                                                        <span>{Math.round(patient.vitals.heartRate)} bpm</span>
+                                                    </div>
+                                                    <div className="vital-item">
+                                                        <Activity size={16} />
+                                                        <span>{patient.vitals.bloodPressure}</span>
+                                                    </div>
+                                                    <div className="vital-item">
+                                                        <Thermometer size={16} />
+                                                        <span>{patient.vitals.temperature.toFixed(1)}°C</span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         ))}
@@ -693,15 +693,19 @@ const DocPatients: React.FC = () => {
                                                     <h4>{patient.name}</h4>
                                                     <p>{patient.condition}</p>
                                                 </div>
-                                                <div className="vital-indicators">
-                                                    <span className="vital">
-                                                        <Heart size={14} />
-                                                        {Math.round(patient.vitals.heartRate)} bpm
-                                                    </span>
-                                                    <span className="vital">
-                                                        <Droplet size={14} />
-                                                        {Math.round(patient.vitals.spO2)}%
-                                                    </span>
+                                                <div className="remote-vitals">
+                                                    <div className="vital-item">
+                                                        <Heart size={16} />
+                                                        <span>{Math.round(patient.vitals.heartRate)} bpm</span>
+                                                    </div>
+                                                    <div className="vital-item">
+                                                        <Activity size={16} />
+                                                        <span>{patient.vitals.bloodPressure}</span>
+                                                    </div>
+                                                    <div className="vital-item">
+                                                        <Thermometer size={16} />
+                                                        <span>{patient.vitals.temperature.toFixed(1)}°C</span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         ))}
@@ -729,15 +733,19 @@ const DocPatients: React.FC = () => {
                                                     <h4>{patient.name}</h4>
                                                     <p>{patient.condition}</p>
                                                 </div>
-                                                <div className="vital-indicators">
-                                                    <span className="vital">
-                                                        <Heart size={14} />
-                                                        {Math.round(patient.vitals.heartRate)} bpm
-                                                    </span>
-                                                    <span className="vital">
-                                                        <Droplet size={14} />
-                                                        {Math.round(patient.vitals.spO2)}%
-                                                    </span>
+                                                <div className="remote-vitals">
+                                                    <div className="vital-item">
+                                                        <Heart size={16} />
+                                                        <span>{Math.round(patient.vitals.heartRate)} bpm</span>
+                                                    </div>
+                                                    <div className="vital-item">
+                                                        <Activity size={16} />
+                                                        <span>{patient.vitals.bloodPressure}</span>
+                                                    </div>
+                                                    <div className="vital-item">
+                                                        <Thermometer size={16} />
+                                                        <span>{patient.vitals.temperature.toFixed(1)}°C</span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         ))}

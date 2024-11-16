@@ -1,95 +1,196 @@
 import React, { useState, useEffect } from 'react';
 import DocSidebar from './DocSidebar';
 import './DocDashboard.css';
-import { 
+import {
     AlertTriangle, Bell, Calendar, Activity,
     Clock, CheckCircle, MessageSquare, Users,
     ChevronRight, Filter, BarChart2, Heart,
-    Thermometer, Droplet, RefreshCw, Search
+    Stethoscope, UserPlus, FileText, Phone,
+    Video, Mail, X, ArrowUpRight, RefreshCw,
+    MessageCircle, ClipboardList
 } from 'lucide-react';
 
 const DocDashboard = () => {
+    // Critical Alerts State
     const [criticalAlerts, setCriticalAlerts] = useState([
         {
             id: 1,
             patientId: "P001",
             patientName: "John Doe",
             type: "vital",
-            message: "Heart rate exceeding normal range (150 bpm)",
+            message: "Heart rate elevated (150 bpm) - Requires immediate attention",
             timestamp: "2024-10-15T10:30:00",
-            severity: "high"
+            severity: "critical",
+            vitalType: "heart_rate"
         },
         {
             id: 2,
             patientId: "P003",
             patientName: "Robert Johnson",
             type: "vital",
-            message: "Low oxygen saturation (89%)",
+            message: "Blood pressure: 180/110 mmHg - Hypertensive crisis",
             timestamp: "2024-10-15T10:15:00",
-            severity: "high"
+            severity: "critical",
+            vitalType: "blood_pressure"
+        },
+        {
+            id: 3,
+            patientId: "P007",
+            patientName: "Mary Smith",
+            type: "lab",
+            message: "Critical potassium levels (6.8 mmol/L)",
+            timestamp: "2024-10-15T09:45:00",
+            severity: "critical",
+            resultType: "lab_result"
         }
     ]);
 
+    // Appointments State
     const [appointments] = useState([
         {
             id: 1,
             patientName: "Jane Smith",
             time: "09:00 AM",
-            type: "Follow-up",
-            status: "Upcoming"
+            type: "in-person",
+            category: "Follow-up",
+            status: "confirmed",
+            duration: "30min",
+            notes: "Post-surgery check"
         },
         {
             id: 2,
             patientName: "Michael Brown",
             time: "10:30 AM",
-            type: "New Consultation",
-            status: "Upcoming"
+            type: "virtual",
+            category: "New Consultation",
+            status: "pending",
+            duration: "45min",
+            notes: "First time visit - Chest pain"
         },
         {
             id: 3,
             patientName: "Sarah Williams",
             time: "02:00 PM",
-            type: "Review",
-            status: "Upcoming"
+            type: "in-person",
+            category: "Review",
+            status: "confirmed",
+            duration: "30min",
+            notes: "Medication review"
         }
     ]);
 
+    // Tasks State
     const [tasks] = useState([
         {
             id: 1,
             title: "Review Lab Results",
             patientName: "Emma Davis",
             priority: "High",
-            dueDate: "2024-10-15"
+            dueDate: "2024-10-15",
+            type: "lab_review",
+            description: "CBC and Metabolic Panel results pending review"
         },
         {
             id: 2,
             title: "Update Treatment Plan",
             patientName: "John Doe",
             priority: "Medium",
-            dueDate: "2024-10-15"
+            dueDate: "2024-10-15",
+            type: "treatment_plan",
+            description: "Adjust medication dosage based on recent vital trends"
+        },
+        {
+            id: 3,
+            title: "Sign Medical Certificate",
+            patientName: "Alice Johnson",
+            priority: "Low",
+            dueDate: "2024-10-15",
+            type: "documentation",
+            description: "Return to work certificate needed"
         }
     ]);
 
+    // Patient Statistics State
     const [patientStats, setPatientStats] = useState({
         total: 25,
         critical: 3,
         stable: 18,
-        monitoring: 4
+        monitoring: 4,
+        newAdmissions: 2,
+        pendingDischarge: 3
     });
 
-    const [recentMessages] = useState([
+    // Recent Activities State
+    const [recentActivities] = useState([
         {
             id: 1,
-            patientName: "Alice Johnson",
-            message: "When should I take the new medication?",
-            timestamp: "10:30 AM"
+            type: "admission",
+            patientName: "George Wilson",
+            description: "New admission - Acute appendicitis",
+            timestamp: "10:15 AM",
+            priority: "high"
         },
         {
             id: 2,
-            patientName: "Bob Wilson",
-            message: "My blood pressure readings attached",
-            timestamp: "09:45 AM"
+            type: "lab_result",
+            patientName: "Sarah Connor",
+            description: "New lab results available",
+            timestamp: "09:30 AM",
+            priority: "medium"
+        },
+        {
+            id: 3,
+            type: "note",
+            patientName: "James Moore",
+            description: "Treatment plan updated",
+            timestamp: "09:00 AM",
+            priority: "low"
+        }
+    ]);
+
+    // Messages State
+    const [messages] = useState([
+        {
+            id: 1,
+            sender: "Dr. Sarah Johnson",
+            content: "Patient in Room 302 needs consultation",
+            timestamp: "10:30 AM",
+            type: "colleague",
+            urgent: true
+        },
+        {
+            id: 2,
+            sender: "Nurse Station B",
+            content: "New vital signs recorded for Patient ID: P007",
+            timestamp: "10:15 AM",
+            type: "staff",
+            urgent: false
+        },
+        {
+            id: 3,
+            sender: "Laboratory",
+            content: "Urgent lab results ready for review",
+            timestamp: "09:45 AM",
+            type: "system",
+            urgent: true
+        }
+    ]);
+
+    // Announcements State
+    const [announcements] = useState([
+        {
+            id: 1,
+            title: "New COVID-19 Protocol",
+            content: "Updated guidelines for patient screening",
+            timestamp: "2024-10-15",
+            priority: "high"
+        },
+        {
+            id: 2,
+            title: "System Maintenance",
+            content: "Scheduled downtime on Sunday 2 AM",
+            timestamp: "2024-10-14",
+            priority: "medium"
         }
     ]);
 
@@ -105,26 +206,19 @@ const DocDashboard = () => {
         return () => clearInterval(interval);
     }, []);
 
-    const [vitalsData] = useState({
-        labels: ['6:00 AM', '9:00 AM', '12:00 PM', '3:00 PM'],
-        datasets: {
-            heartRate: [72, 75, 78, 74],
-            temperature: [36.8, 37.1, 36.9, 37.0],
-            spO2: [98, 97, 98, 99]
-        }
-    });
-
     return (
         <div className="doc-dashboard-page">
             <DocSidebar />
             <div className="doc-dashboard-content">
                 <div className="dashboard-header">
                     <div className="header-top">
-                        <h1>Dashboard</h1>
-                        <button className="refresh-button">
-                            <RefreshCw size={20} />
-                            Refresh Data
-                        </button>
+                        <div className="header-title-group">
+                            <h1>Dashboard</h1>
+                            <span className="last-updated">
+                                <Clock size={14} />
+                                Last updated: {new Date().toLocaleTimeString()}
+                            </span>
+                        </div>
                     </div>
 
                     <div className="stats-grid">
@@ -136,7 +230,11 @@ const DocDashboard = () => {
                                 </div>
                             </div>
                             <div className="card-content">
-                                <div className="text-2xl font-bold">{patientStats.total}</div>
+                                <div className="stat-value">{patientStats.total}</div>
+                                <div className="stat-detail">
+                                    <span className="stat-label">New: </span>
+                                    <span className="stat-number">+{patientStats.newAdmissions}</span>
+                                </div>
                             </div>
                         </div>
 
@@ -144,12 +242,13 @@ const DocDashboard = () => {
                             <div className="card-header">
                                 <div className="card-title">
                                     <AlertTriangle size={20} className="text-red-500" />
-                                    Critical
+                                    Critical Care
                                 </div>
                             </div>
                             <div className="card-content">
-                                <div className="text-2xl font-bold text-red-500">
-                                    {patientStats.critical}
+                                <div className="stat-value text-red-500">{patientStats.critical}</div>
+                                <div className="stat-detail">
+                                    <span className="stat-label">Requires attention</span>
                                 </div>
                             </div>
                         </div>
@@ -162,8 +261,10 @@ const DocDashboard = () => {
                                 </div>
                             </div>
                             <div className="card-content">
-                                <div className="text-2xl font-bold text-green-500">
-                                    {patientStats.stable}
+                                <div className="stat-value text-green-500">{patientStats.stable}</div>
+                                <div className="stat-detail">
+                                    <span className="stat-label">Discharge: </span>
+                                    <span className="stat-number">{patientStats.pendingDischarge}</span>
                                 </div>
                             </div>
                         </div>
@@ -176,8 +277,9 @@ const DocDashboard = () => {
                                 </div>
                             </div>
                             <div className="card-content">
-                                <div className="text-2xl font-bold text-blue-500">
-                                    {patientStats.monitoring}
+                                <div className="stat-value text-blue-500">{patientStats.monitoring}</div>
+                                <div className="stat-detail">
+                                    <span className="stat-label">Under observation</span>
                                 </div>
                             </div>
                         </div>
@@ -185,6 +287,8 @@ const DocDashboard = () => {
                 </div>
 
                 <div className="dashboard-grid">
+
+                    {/* Critical Alerts Section */}
                     <div className="dashboard-card col-span-2">
                         <div className="card-header">
                             <div className="card-title-group">
@@ -192,28 +296,30 @@ const DocDashboard = () => {
                                     <AlertTriangle className="text-red-500" />
                                     Critical Alerts
                                 </div>
-                                <span className="text-sm text-red-500 font-normal">
-                                    {criticalAlerts.length} active alerts
-                                </span>
+                                <span className="alert-count">{criticalAlerts.length} active</span>
                             </div>
                         </div>
                         <div className="card-content">
                             <div className="alerts-list">
                                 {criticalAlerts.map(alert => (
-                                    <div key={alert.id} className="alert-item">
+                                    <div key={alert.id} className={`alert-item severity-${alert.severity}`}>
                                         <div className="alert-icon">
                                             <AlertTriangle size={20} />
                                         </div>
                                         <div className="alert-content">
                                             <h4>{alert.patientName}</h4>
                                             <p>{alert.message}</p>
-                                            <span className="alert-time">
-                                                <Clock size={14} />
-                                                {new Date(alert.timestamp).toLocaleTimeString()}
-                                            </span>
+                                            <div className="alert-footer">
+                                                <span className="alert-time">
+                                                    <Clock size={14} />
+                                                    {new Date(alert.timestamp).toLocaleTimeString()}
+                                                </span>
+                                                <span className="alert-type">{alert.type}</span>
+                                            </div>
                                         </div>
                                         <button className="alert-action">
-                                            <ChevronRight size={20} />
+                                            View Details
+                                            <ChevronRight size={16} />
                                         </button>
                                     </div>
                                 ))}
@@ -221,6 +327,7 @@ const DocDashboard = () => {
                         </div>
                     </div>
 
+                    {/* Today's Schedule Section */}
                     <div className="dashboard-card">
                         <div className="card-header">
                             <div className="card-title">
@@ -231,16 +338,22 @@ const DocDashboard = () => {
                         <div className="card-content">
                             <div className="appointments-list">
                                 {appointments.map(appointment => (
-                                    <div key={appointment.id} className="appointment-item">
+                                    <div key={appointment.id} className={`appointment-item status-${appointment.status}`}>
                                         <div className="appointment-time">
                                             <Clock size={14} />
                                             {appointment.time}
+                                            <span className="appointment-duration">({appointment.duration})</span>
                                         </div>
                                         <div className="appointment-info">
-                                            <h4>{appointment.patientName}</h4>
-                                            <span className="appointment-type">
-                                                {appointment.type}
-                                            </span>
+                                            <div className="appointment-header">
+                                                <h4>{appointment.patientName}</h4> 
+                                            </div>
+                                            <div className="appointment-details">
+                                                <span className={`appointment-status status-${appointment.status}`}>
+                                                    {appointment.status}
+                                                </span>
+                                            </div>
+                                            <p className="appointment-notes">{appointment.notes}</p>
                                         </div>
                                     </div>
                                 ))}
@@ -248,80 +361,42 @@ const DocDashboard = () => {
                         </div>
                     </div>
 
+                    {/* Recent Activities Section */}
                     <div className="dashboard-card">
                         <div className="card-header">
                             <div className="card-title">
-                                <MessageSquare />
-                                Recent Messages
+                                <Activity />
+                                Recent Activities
                             </div>
                         </div>
                         <div className="card-content">
-                            <div className="messages-list">
-                                {recentMessages.map(message => (
-                                    <div key={message.id} className="message-item">
-                                        <h4>{message.patientName}</h4>
-                                        <p>{message.message}</p>
-                                        <span className="message-time">
-                                            <Clock size={14} />
-                                            {message.timestamp}
-                                        </span>
+                            <div className="activities-list">
+                                {recentActivities.map(activity => (
+                                    <div key={activity.id} className={`activity-item priority-${activity.priority}`}>
+                                        <div className="activity-icon">
+                                            {activity.type === 'admission' && <UserPlus size={16} />}
+                                            {activity.type === 'lab_result' && <FileText size={16} />}
+                                            {activity.type === 'note' && <ClipboardList size={16} />}
+                                        </div>
+                                        <div className="activity-content">
+                                            <h4>{activity.patientName}</h4>
+                                            <p>{activity.description}</p>
+                                            <span className="activity-time">
+                                                <Clock size={14} />
+                                                {activity.timestamp}
+                                            </span>
+                                        </div>
+                                        <button className="activity-action">
+                                            <ArrowUpRight size={16} />
+                                        </button>
                                     </div>
                                 ))}
                             </div>
                         </div>
                     </div>
 
+                    {/* Tasks Section */}
                     <div className="dashboard-card col-span-2">
-                        <div className="card-header">
-                            <div className="card-title-group">
-                                <div className="card-title">
-                                    <BarChart2 />
-                                    Vitals Overview
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <Filter size={16} />
-                                    <select className="vitals-select">
-                                        <option>Last 24 Hours</option>
-                                        <option>Last Week</option>
-                                        <option>Last Month</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="card-content">
-                            <div className="vitals-grid">
-                                <div className="vital-card">
-                                    <Heart className="text-red-500" />
-                                    <div className="vital-info">
-                                        <span className="vital-label">Avg Heart Rate</span>
-                                        <span className="vital-value">
-                                            {Math.round(vitalsData.datasets.heartRate.reduce((a, b) => a + b) / vitalsData.datasets.heartRate.length)} bpm
-                                        </span>
-                                    </div>
-                                </div>
-                                <div className="vital-card">
-                                    <Thermometer className="text-orange-500" />
-                                    <div className="vital-info">
-                                        <span className="vital-label">Avg Temperature</span>
-                                        <span className="vital-value">
-                                            {(vitalsData.datasets.temperature.reduce((a, b) => a + b) / vitalsData.datasets.temperature.length).toFixed(1)}°C
-                                        </span>
-                                    </div>
-                                </div>
-                                <div className="vital-card">
-                                    <Droplet className="text-blue-500" />
-                                    <div className="vital-info">
-                                        <span className="vital-label">Avg SpO2</span>
-                                        <span className="vital-value">
-                                            {Math.round(vitalsData.datasets.spO2.reduce((a, b) => a + b) / vitalsData.datasets.spO2.length)}%
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="dashboard-card">
                         <div className="card-header">
                             <div className="card-title">
                                 <CheckCircle />
@@ -333,15 +408,102 @@ const DocDashboard = () => {
                                 {tasks.map(task => (
                                     <div key={task.id} className={`task-item priority-${task.priority.toLowerCase()}`}>
                                         <div className="task-content">
-                                            <h4>{task.title}</h4>
-                                            <p>{task.patientName}</p>
-                                            <span className="task-due">
-                                                <Clock size={14} />
-                                                Due: {new Date(task.dueDate).toLocaleDateString()}
+                                            <div className="task-header">
+                                                <h4>{task.title}</h4>
+                                                <span className={`task-priority priority-${task.priority.toLowerCase()}`}>
+                                                    {task.priority}
+                                                </span>
+                                            </div>
+                                            <p className="task-description">{task.description}</p>
+                                            <div className="task-footer">
+                                                <span className="task-patient">{task.patientName}</span>
+                                                <span className="task-due">
+                                                    <Clock size={14} />
+                                                    Due: {new Date(task.dueDate).toLocaleDateString()}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="task-actions">
+                                            <button className="task-complete" title="Mark as complete">
+                                                <CheckCircle size={20} />
+                                            </button>
+                                            <button className="task-edit" title="Edit task">
+                                                <FileText size={20} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Messages & Communication Section */}
+                    <div className="dashboard-card">
+                        <div className="card-header">
+                            <div className="card-title-group">
+                                <div className="card-title">
+                                    <MessageSquare />
+                                    Messages
+                                </div>
+                                <button className="compose-button">
+                                    <MessageCircle size={16} />
+                                    New Message
+                                </button>
+                            </div>
+                        </div>
+                        <div className="card-content">
+                            <div className="messages-list">
+                                {messages.map(message => (
+                                    <div key={message.id} className={`message-item ${message.urgent ? 'urgent' : ''}`}>
+                                        <div className="message-header">
+                                            <h4>{message.sender}</h4>
+                                            <span className={`message-type type-${message.type}`}>
+                                                {message.type}
                                             </span>
                                         </div>
-                                        <button className="task-complete">
-                                            <CheckCircle size={20} />
+                                        <p className="message-content">{message.content}</p>
+                                        <div className="message-footer">
+                                            <span className="message-time">
+                                                <Clock size={14} />
+                                                {message.timestamp}
+                                            </span>
+                                            <div className="message-actions">
+                                                <button className="action-button" title="Reply">
+                                                    <Mail size={14} />
+                                                </button>
+                                                <button className="action-button" title="Mark as read">
+                                                    <CheckCircle size={14} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Announcements Section */}
+                    <div className="dashboard-card">
+                        <div className="card-header">
+                            <div className="card-title">
+                                <Bell />
+                                Announcements
+                            </div>
+                        </div>
+                        <div className="card-content">
+                            <div className="announcements-list">
+                                {announcements.map(announcement => (
+                                    <div key={announcement.id} className={`announcement-item priority-${announcement.priority}`}>
+                                        <div className="announcement-header">
+                                            <h4>{announcement.title}</h4>
+                                            <span className="announcement-date">
+                                                {new Date(announcement.timestamp).toLocaleDateString()}
+                                            </span>
+                                        </div>
+                                        <p className="announcement-content">{announcement.content}</p>
+                                        <button className="announcement-action">
+                                            Read More
+                                            <ChevronRight size={16} />
                                         </button>
                                     </div>
                                 ))}
