@@ -1,0 +1,337 @@
+.doc-patients-page {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+}
+
+.doc-patients-content {
+    flex-grow: 1;
+    padding: 24px;
+    margin-left: 250px;
+    background-color: #f0f2f5;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.doc-patients-content.with-details {
+    padding-right: 424px;
+}
+
+.dashboard-header {
+    margin-bottom: 24px;
+}
+
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.header-top h1 {
+    margin: 0;
+    color: #333;
+    font-size: 1.75rem;
+    font-weight: 600;
+}
+
+.header-controls {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.search-box {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    height: 40px;
+}
+
+.search-box svg {
+    color: #666;
+    margin-left: 12px;
+}
+
+.search-box input {
+    flex: 1;
+    border: none;
+    outline: none;
+    margin: 0 12px;
+    font-size: 0.9rem;
+    height: 100%;
+}
+
+.filters {
+    display: flex;
+    gap: 12px;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 0 12px;
+    height: 40px;
+}
+
+.filter-group svg {
+    color: #666;
+}
+
+.filter-group select {
+    border: none;
+    outline: none;
+    background: none;
+    margin-left: 8px;
+    min-width: 120px;
+    font-size: 0.9rem;
+    color: #333;
+    height: 100%;
+}
+
+.patient-overview {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.hospital-section {
+    margin-bottom: 24px;
+}
+
+.ward-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.ward-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.ward-card.icu {
+    border-left: 4px solid #f44336;
+}
+
+.ward-card.emergency {
+    border-left: 4px solid #ff9800;
+}
+
+.ward-card.general {
+    border-left: 4px solid #2196f3;
+}
+
+.ward-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.ward-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ward-card.icu .ward-icon {
+    background: #ffebee;
+    color: #f44336;
+}
+
+.ward-card.emergency .ward-icon {
+    background: #fff3e0;
+    color: #ff9800;
+}
+
+.ward-card.general .ward-icon {
+    background: #e3f2fd;
+    color: #2196f3;
+}
+
+.ward-info h3 {
+    margin: 0 0 4px 0;
+    color: #333;
+    font-size: 1.2rem;
+}
+
+.patient-count {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.ward-patients {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.patient-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 16px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+.patient-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.patient-card.critical {
+    border-left: 3px solid #f44336;
+}
+
+.patient-card.urgent {
+    border-left: 3px solid #ff9800;
+}
+
+.patient-card.stable {
+    border-left: 3px solid #4caf50;
+}
+
+.patient-info {
+    margin-bottom: 12px;
+}
+
+.patient-info h4 {
+    margin: 0 0 4px 0;
+    color: #333;
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+.patient-info p {
+    margin: 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.vital-signs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 6px;
+}
+
+.vital-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.vital-item svg {
+    width: 16px;
+    height: 16px;
+}
+
+.vital-item svg.heart {
+    color: #f44336;
+}
+
+.vital-item svg.activity {
+    color: #2196f3;
+}
+
+.vital-item svg.thermometer {
+    color: #ff9800;
+}
+
+.vital-item span {
+    font-size: 0.85rem;
+    color: #333;
+    font-weight: 500;
+}
+
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 48px);
+    color: #666;
+}
+
+.loading:after {
+    content: '';
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 1400px) {
+    .ward-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 1024px) {
+    .doc-patients-content {
+        margin-left: 60px;
+    }
+
+    .header-controls {
+        flex-direction: column;
+    }
+
+    .ward-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .filters {
+        flex-direction: column;
+    }
+
+    .filter-group {
+        width: 100%;
+    }
+
+    .vital-signs {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Scrollbar Styles */
+.doc-patients-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.doc-patients-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.doc-patients-content::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.doc-patients-content::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

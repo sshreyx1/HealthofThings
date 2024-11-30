@@ -11,6 +11,8 @@
     "start": "node server.js"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.699.0",
+    "@aws-sdk/lib-dynamodb": "^3.699.0",
     "@radix-ui/react-select": "^2.1.2",
     "@react-google-maps/api": "^2.20.3",
     "add": "^2.0.6",

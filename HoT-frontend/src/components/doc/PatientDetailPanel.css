@@ -1,0 +1,208 @@
+/* File: src/components/doc/PatientDetailsPanel.css */
+.patient-details-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 400px;
+    height: 100vh;
+    background: white;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.panel-header {
+    position: sticky;
+    top: 0;
+    padding: 20px 24px;
+    background: white;
+    border-bottom: 1px solid #e0e0e0;
+    z-index: 2;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.header-content h2 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #333;
+    flex-grow: 1;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    color: #666;
+    border-radius: 4px;
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.close-button:hover {
+    background: #f8f9fa;
+    color: #333;
+}
+
+.panel-content {
+    padding: 24px;
+}
+
+.details-section {
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.details-section:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.details-section h3 {
+    font-size: 1rem;
+    color: #666;
+    margin: 0 0 16px 0;
+    font-weight: 500;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.info-item svg {
+    color: #1976d2;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.info-label {
+    display: block;
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 2px;
+}
+
+.info-item > div {
+    flex-grow: 1;
+}
+
+.vitals-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.vital-box {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.vital-box svg {
+    color: #1976d2;
+}
+
+.vital-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.vital-label {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.vital-value {
+    font-size: 1.1rem;
+    color: #333;
+    font-weight: 500;
+}
+
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.status-badge.critical {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.status-badge.urgent {
+    background: #fff3e0;
+    color: #ef6c00;
+}
+
+.status-badge.stable {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.status-badge.normal {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+
+.medical-history-list,
+.emergency-contacts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.history-item,
+.contact-item {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.history-item .condition,
+.contact-item .name {
+    font-weight: 500;
+    color: #333;
+}
+
+.history-item .year,
+.contact-item .phone {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+    .patient-details-panel {
+        width: 100%;
+        height: calc(100vh - 60px);
+        top: 60px;
+    }
+
+    .info-grid,
+    .vitals-grid {
+        grid-template-columns: 1fr;
+    }
+}
