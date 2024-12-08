@@ -1,19 +1,19 @@
 .schedule-page {
   display: flex;
-  height: 100vh;
+  min-height: 100vh;
   width: 100vw;
   overflow: hidden;
+  background-color: #f0f2f5;
 }
 
 .schedule-content {
   flex-grow: 1;
-  padding: 20px;
-  margin-left: 200px;
-  background-color: #f0f2f5;
-  overflow: hidden;
+  margin-left: 250px;
+  padding: 24px;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
 }
 
 .schedule-header {

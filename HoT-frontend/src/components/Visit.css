@@ -7,10 +7,13 @@
 
 .visit-content {
   flex-grow: 1;
-  padding: 20px;
-  margin-left: 200px;
+  margin-left: 250px;
+  padding: 24px;
   background-color: #f0f2f5;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
 
 .visit-content h1 {
@@ -533,6 +536,7 @@
   gap: 12px;
   padding: 12px 0;
   border-bottom: 1px solid #e0e0e0;
+  text-align: left;
 }
 
 .summary-row:last-child {
@@ -544,17 +548,25 @@
   font-size: 0.9rem;
   margin-bottom: 4px;
   display: block;
+  text-align: left;
 }
 
 .summary-row p {
   color: #333;
   font-weight: 500;
   margin: 0 0 4px 0;
+  text-align: left;
 }
 
 .summary-detail {
   color: #666;
   font-size: 0.9rem;
+  text-align: left;
+}
+
+.summary-row > div {
+  flex: 1;
+  text-align: left;  /* Add this line */
 }
 
 .book-button {
