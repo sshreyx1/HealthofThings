@@ -13,6 +13,50 @@ import {
     CartesianGrid, Tooltip, ReferenceLine, Area, ComposedChart
 } from 'recharts';
 
+const VITAL_THRESHOLDS = {
+  heartRate: {
+      min: 60,    // Below 60 is bradycardia
+      max: 100,   // Above 100 is tachycardia
+      warning_buffer: 5,  // Warning if within 5 of min/max
+      unit: 'bpm',
+      target: 80
+  },
+  temperature: {
+      min: 36.1,  // Below 36.1°C is hypothermia
+      max: 37.8,  // Above 37.8°C is fever
+      warning_buffer: 0.2,  // Warning if within 0.2 of min/max
+      unit: '°C',
+      target: 36.8
+  },
+  oxygenSaturation: {
+      min: 95,    // Below 95% requires attention
+      max: 100,   // Cannot exceed 100%
+      warning_buffer: 2,  // Warning if within 2 of min
+      unit: '%',
+      target: 98
+  },
+  respiratoryRate: {
+      min: 12,    // Below 12 breaths/min is concerning
+      max: 20,    // Above 20 breaths/min is concerning
+      warning_buffer: 2,  // Warning if within 2 of min/max
+      unit: 'bpm',
+      target: 16
+  },
+  bloodPressureSystolic: {
+      min: 90,    // Below 90 is hypotension
+      max: 130,   // Above 130 is hypertension
+      warning_buffer: 10,  // Warning if within 10 of min/max
+      unit: 'mmHg',
+      target: 115
+  },
+  bloodGlucose: {
+      min: 70,    // Below 70 mg/dL is hypoglycemia
+      max: 140,   // Above 140 mg/dL is hyperglycemia
+      warning_buffer: 10,  // Warning if within 10 of min/max
+      unit: 'mg/dL',
+      target: 100
+  }
+};
 interface VitalSign {
     id: string;
     name: string;
@@ -49,6 +93,7 @@ const Diagnosis: React.FC = () => {
     const [timeRange, setTimeRange] = useState('1D');
     const [comparisonMode, setComparisonMode] = useState<'none' | 'target' | 'historical'>('none');
     const [showAlerts, setShowAlerts] = useState(true);
+    const [historicalData, setHistoricalData] = useState<Record<string, Array<{ time: string; value: number }>>>({});
 
     // Generate 30-minute time series data
     const generateTimeSeriesData = (baseValue: number, range: number) => {
@@ -60,49 +105,90 @@ const Diagnosis: React.FC = () => {
     };
 
     useEffect(() => {
-        if (!patientId) {
-            navigate('/login');
-            return;
-        }
-
-        const fetchData = async () => {
-            try {
-                // Fetch vitals
-                const vitalsResponse = await fetch(`http://localhost:8080/api/vitals/${patientId}`);
-                if (!vitalsResponse.ok) throw new Error('Failed to fetch vitals');
-                const vitalsData = await vitalsResponse.json();
-                setVitals(vitalsData);
-
-                // Fetch alerts
-                const alertsResponse = await fetch(`http://localhost:8080/api/alerts/${patientId}`);
-                if (!alertsResponse.ok) throw new Error('Failed to fetch alerts');
-                const alertsData = await alertsResponse.json();
-                setAlerts(alertsData.slice(0, 5)); // Keep only latest 5 alerts
-
-                setLoading(false);
-            } catch (err) {
-                console.error('Error fetching data:', err);
-                setError('Failed to fetch data');
-                setLoading(false);
-            }
-        };
-
-        fetchData();
-
-        // WebSocket connection
-        const ws = new WebSocket(`ws://localhost:8080/ws/vitals/${patientId}`);
-        
-        ws.onmessage = (event) => {
-            try {
-                const data = JSON.parse(event.data);
-                setVitals(data);
-            } catch (err) {
-                console.error('WebSocket error:', err);
-            }
-        };
-
-        return () => ws.close();
-    }, [patientId, navigate]);
+      if (!patientId) {
+          navigate('/login');
+          return;
+      }
+  
+      // Initialize historical data for each vital sign
+      const initializeHistoricalData = (vitalValue: number, vitalId: string) => {
+          const now = new Date();
+          const initialData = Array.from({ length: 30 }, (_, i) => ({
+              time: new Date(now.getTime() - (29 - i) * 60000).toISOString(),
+              value: vitalValue
+          }));
+          return initialData;
+      };
+  
+      const fetchData = async () => {
+          try {
+              // Fetch initial vitals
+              const vitalsResponse = await fetch(`http://localhost:8080/api/vitals/${patientId}`);
+              if (!vitalsResponse.ok) throw new Error('Failed to fetch vitals');
+              const vitalsData = await vitalsResponse.json();
+              setVitals(vitalsData);
+  
+              // Initialize historical data
+              const initialHistoricalData: Record<string, Array<{ time: string; value: number }>> = {
+                  heartRate: initializeHistoricalData(vitalsData.vital_signs.heartbeat, 'heartRate'),
+                  temperature: initializeHistoricalData(vitalsData.vital_signs.temperature, 'temperature'),
+                  oxygenSaturation: initializeHistoricalData(vitalsData.vital_signs.oxygen_saturation, 'oxygenSaturation'),
+                  respiratoryRate: initializeHistoricalData(vitalsData.vital_signs.respiration_rate, 'respiratoryRate'),
+                  bloodPressure: initializeHistoricalData(vitalsData.vital_signs.blood_pressure_systolic, 'bloodPressure'),
+                  bloodGlucose: initializeHistoricalData(vitalsData.vital_signs.blood_glucose, 'bloodGlucose')
+              };
+              setHistoricalData(initialHistoricalData);
+  
+              // Fetch alerts (limit to 4)
+              const alertsResponse = await fetch(`http://localhost:8080/api/alerts/${patientId}`);
+              if (!alertsResponse.ok) throw new Error('Failed to fetch alerts');
+              const alertsData = await alertsResponse.json();
+              setAlerts(alertsData.slice(0, 4)); // Limit to 4 alerts
+  
+              setLoading(false);
+          } catch (err) {
+              console.error('Error fetching data:', err);
+              setError('Failed to fetch data');
+              setLoading(false);
+          }
+      };
+  
+      fetchData();
+  
+      // WebSocket connection for real-time updates
+      const ws = new WebSocket(`ws://localhost:8080/ws/vitals/${patientId}`);
+      
+      ws.onmessage = (event) => {
+          try {
+              const newData = JSON.parse(event.data);
+              setVitals(newData);
+  
+              // Update historical data
+              setHistoricalData(prevData => {
+                  const now = new Date().toISOString();
+                  const newHistoricalData = { ...prevData };
+  
+                  // Update each vital sign's historical data
+                  Object.entries(newData.vital_signs).forEach(([key, value]) => {
+                      const vitalId = key.replace(/_/g, '') as keyof typeof newHistoricalData;
+                      if (newHistoricalData[vitalId]) {
+                          // Remove oldest data point and add new one
+                          newHistoricalData[vitalId] = [
+                              ...newHistoricalData[vitalId].slice(1),
+                              { time: now, value: value as number }
+                          ];
+                      }
+                  });
+  
+                  return newHistoricalData;
+              });
+          } catch (err) {
+              console.error('WebSocket error:', err);
+          }
+      };
+  
+      return () => ws.close();
+  }, [patientId, navigate]);
 
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error}</div>;
