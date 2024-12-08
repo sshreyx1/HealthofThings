@@ -68,3 +68,16 @@ type MedicalHistory struct {
     Condition string `json:"condition"`
     Year     int    `json:"year"`
 }
+
+type Alert struct {
+    PatientID  string  `json:"patient_id" dynamodbav:"patient_id"`
+    Timestamp  string  `json:"timestamp" dynamodbav:"timestamp"`
+    AlertID    string  `json:"alert_id" dynamodbav:"alert_id"`
+    Message    string  `json:"message" dynamodbav:"message"`
+    MessageID  string  `json:"message_id" dynamodbav:"message_id"`
+    Severity   string  `json:"severity" dynamodbav:"severity"`
+    Status     string  `json:"status" dynamodbav:"status"`
+    Unit       string  `json:"unit" dynamodbav:"unit"`
+    Value      float64 `json:"value" dynamodbav:"value"`
+    VitalType  string  `json:"vital_type" dynamodbav:"vital_type"`
+}

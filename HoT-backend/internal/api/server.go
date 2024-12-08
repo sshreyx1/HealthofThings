@@ -4,67 +4,184 @@ import (
     "encoding/json"
     "log"
     "net/http"
+    "sync"
     "time"
+
     "github.com/gorilla/mux"
     "github.com/gorilla/websocket"
-    "github.com/rs/cors"
     "github.com/sshreyx1/HealthofThings/HoT-backend/internal/db"
+    "github.com/sshreyx1/HealthofThings/HoT-backend/internal/api/middleware"
+    "github.com/sshreyx1/HealthofThings/HoT-backend/internal/services"
 )
 
 var upgrader = websocket.Upgrader{
     CheckOrigin: func(r *http.Request) bool {
-        return true
+        return true // Be more restrictive in production
     },
+    ReadBufferSize:  1024,
+    WriteBufferSize: 1024,
+}
+type Server struct {
+    router       *mux.Router
+    dbClient     *db.DynamoDBClient
+    alertService *services.AlertService
+    clients      map[*websocket.Conn]bool
+    clientsMux   sync.RWMutex
 }
 
-type Handlers struct {
-    dbClient *db.DynamoDBClient
-}
 
-func NewHandlers(dbClient *db.DynamoDBClient) *Handlers {
-    return &Handlers{
-        dbClient: dbClient,
+func NewServer(dbClient *db.DynamoDBClient) *Server {
+    server := &Server{
+        router:       mux.NewRouter(),
+        dbClient:     dbClient,
+        alertService: services.NewAlertService(dbClient),
+        clients:      make(map[*websocket.Conn]bool),
     }
+    server.setupRoutes()
+    return server
 }
 
-func SetupRouter(dbClient *db.DynamoDBClient) http.Handler {
-    r := mux.NewRouter()
-    api := r.PathPrefix("/api").Subrouter()
 
-    h := NewHandlers(dbClient)
+func (s *Server) setupRoutes() {
+    // Apply CORS middleware
+    s.router.Use(middleware.CORS)
 
-    corsMiddleware := cors.New(cors.Options{
-        AllowedOrigins: []string{"http://localhost:5173"},
-        AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-        AllowedHeaders: []string{"Content-Type", "Authorization"},
-    })
+    // API routes
+    api := s.router.PathPrefix("/api").Subrouter()
+    
+    // Patient routes
+    api.HandleFunc("/patients", s.GetAllPatients).Methods("GET", "OPTIONS")
+    api.HandleFunc("/patients/{id}", s.GetPatient).Methods("GET", "OPTIONS")
+    api.HandleFunc("/vitals/{patientId}", s.GetVitals).Methods("GET", "OPTIONS")
+    
+    // Alert routes
+    api.HandleFunc("/alerts", s.GetAllAlerts).Methods("GET", "OPTIONS")
+    api.HandleFunc("/alerts/{patientId}", s.GetPatientAlerts).Methods("GET", "OPTIONS")
+    api.HandleFunc("/alerts/{alertId}", s.UpdateAlertStatus).Methods("PUT", "OPTIONS")
 
-    api.HandleFunc("/patients", h.GetAllPatients).Methods("GET")
-    api.HandleFunc("/patients/{id}", h.GetPatient).Methods("GET")
-    api.HandleFunc("/vitals/{patientId}", h.GetVitals).Methods("GET")
-    r.HandleFunc("/ws/vitals/{patientId}", h.HandleVitalsWebSocket)
-
-    return corsMiddleware.Handler(r)
+    // WebSocket routes
+    s.router.HandleFunc("/ws/alerts", s.handleAlertWebSocket)
+    s.router.HandleFunc("/ws/vitals/{patientId}", s.HandleVitalsWebSocket)
 }
 
-func (h *Handlers) GetAllPatients(w http.ResponseWriter, r *http.Request) {
-    log.Println("Getting all patients")
-    patients, err := h.dbClient.GetAllPatients()
+// Alert handlers
+func (s *Server) GetAllAlerts(w http.ResponseWriter, r *http.Request) {
+    alerts, err := s.alertService.GetAllAlerts()
     if err != nil {
-        log.Printf("Error getting patients: %v", err)
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
     }
 
     w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(alerts)
+}
+
+func (s *Server) GetPatientAlerts(w http.ResponseWriter, r *http.Request) {
+    vars := mux.Vars(r)
+    patientID := vars["patientId"]
+
+    alerts, err := s.alertService.GetPatientAlerts(patientID)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(alerts)
+}
+
+func (s *Server) UpdateAlertStatus(w http.ResponseWriter, r *http.Request) {
+    vars := mux.Vars(r)
+    alertID := vars["alertId"]
+
+    var update struct {
+        Status    string `json:"status"`
+        PatientID string `json:"patient_id"`
+    }
+
+    if err := json.NewDecoder(r.Body).Decode(&update); err != nil {
+        http.Error(w, "Invalid request body", http.StatusBadRequest)
+        return
+    }
+
+    err := s.alertService.UpdateAlertStatus(alertID, update.PatientID, update.Status)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+
+    w.WriteHeader(http.StatusOK)
+}
+
+// WebSocket handlers
+func (s *Server) handleAlertWebSocket(w http.ResponseWriter, r *http.Request) {
+    conn, err := upgrader.Upgrade(w, r, nil)
+    if err != nil {
+        log.Printf("WebSocket upgrade failed: %v", err)
+        return
+    }
+
+    // Register client
+    s.clientsMux.Lock()
+    s.clients[conn] = true
+    s.clientsMux.Unlock()
+
+    defer func() {
+        s.clientsMux.Lock()
+        delete(s.clients, conn)
+        s.clientsMux.Unlock()
+        conn.Close()
+    }()
+
+    // Send initial alerts
+    alerts, err := s.alertService.GetAllAlerts()
+    if err == nil {
+        if err := conn.WriteJSON(alerts); err != nil {
+            log.Printf("Error sending initial alerts: %v", err)
+            return
+        }
+    }
+
+    // Keep connection alive and handle periodic updates
+    ticker := time.NewTicker(5 * time.Second)
+    defer ticker.Stop()
+
+    for {
+        select {
+        case <-ticker.C:
+            alerts, err := s.alertService.GetAllAlerts()
+            if err != nil {
+                log.Printf("Error fetching alerts: %v", err)
+                continue
+            }
+
+            if err := conn.WriteJSON(alerts); err != nil {
+                log.Printf("Error sending alerts update: %v", err)
+                return
+            }
+        case <-r.Context().Done():
+            return
+        }
+    }
+}
+
+// Existing handlers
+func (s *Server) GetAllPatients(w http.ResponseWriter, r *http.Request) {
+    patients, err := s.dbClient.GetAllPatients()
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+    
+    w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(patients)
 }
 
-func (h *Handlers) GetPatient(w http.ResponseWriter, r *http.Request) {
+func (s *Server) GetPatient(w http.ResponseWriter, r *http.Request) {
     vars := mux.Vars(r)
     patientID := vars["id"]
     
-    patient, err := h.dbClient.GetPatientByID(patientID)
+    patient, err := s.dbClient.GetPatientByID(patientID)
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
@@ -74,11 +191,11 @@ func (h *Handlers) GetPatient(w http.ResponseWriter, r *http.Request) {
     json.NewEncoder(w).Encode(patient)
 }
 
-func (h *Handlers) GetVitals(w http.ResponseWriter, r *http.Request) {
+func (s *Server) GetVitals(w http.ResponseWriter, r *http.Request) {
     vars := mux.Vars(r)
     patientID := vars["patientId"]
     
-    vitals, err := h.dbClient.GetLatestVitalSigns(patientID)
+    vitals, err := s.dbClient.GetLatestVitalSigns(patientID)
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
@@ -88,18 +205,10 @@ func (h *Handlers) GetVitals(w http.ResponseWriter, r *http.Request) {
     json.NewEncoder(w).Encode(vitals)
 }
 
-func (h *Handlers) HandleVitalsWebSocket(w http.ResponseWriter, r *http.Request) {
+func (s *Server) HandleVitalsWebSocket(w http.ResponseWriter, r *http.Request) {
     vars := mux.Vars(r)
     patientID := vars["patientId"]
-    
-    log.Printf("Starting WebSocket connection for patient: %s", patientID)
 
-    // Configure upgrader
-    upgrader.CheckOrigin = func(r *http.Request) bool {
-        return true // Allow all origins in development
-    }
-
-    // Upgrade HTTP connection to WebSocket
     conn, err := upgrader.Upgrade(w, r, nil)
     if err != nil {
         log.Printf("WebSocket upgrade failed: %v", err)
@@ -107,59 +216,42 @@ func (h *Handlers) HandleVitalsWebSocket(w http.ResponseWriter, r *http.Request)
     }
     defer conn.Close()
 
-    // Send updates every 5 seconds
-    ticker := time.NewTicker(5 * time.Second)
-    defer ticker.Stop()
-
-    // Create done channel for cleanup
-    done := make(chan bool)
-    defer close(done)
-
-    // Handle client disconnection
-    go func() {
-        for {
-            // Read message from client (needed to detect disconnection)
-            _, _, err := conn.ReadMessage()
-            if err != nil {
-                log.Printf("WebSocket read error: %v", err)
-                done <- true
-                return
-            }
-        }
-    }()
-
-    // Send initial data immediately
-    vitals, err := h.dbClient.GetLatestVitalSigns(patientID)
+    // Send initial data
+    vitals, err := s.dbClient.GetLatestVitalSigns(patientID)
     if err == nil {
         if err := conn.WriteJSON(vitals); err != nil {
-            log.Printf("WebSocket initial write error: %v", err)
+            log.Printf("Error sending initial vitals: %v", err)
             return
         }
     }
+
+    ticker := time.NewTicker(5 * time.Second)
+    defer ticker.Stop()
 
     for {
         select {
         case <-ticker.C:
-            vitals, err := h.dbClient.GetLatestVitalSigns(patientID)
+            vitals, err := s.dbClient.GetLatestVitalSigns(patientID)
             if err != nil {
-                log.Printf("Error getting vitals: %v", err)
+                log.Printf("Error fetching vitals: %v", err)
                 continue
             }
 
-            if err := conn.WriteJSON(vitals); err != nil {
-                log.Printf("WebSocket write error: %v", err)
-                return
+            // Process vitals for alerts
+            if err := s.alertService.ProcessVitalSigns(vitals); err != nil {
+                log.Printf("Error processing vitals: %v", err)
             }
 
-            log.Printf("Sent vital signs update for patient %s", patientID)
-
-        case <-done:
-            log.Printf("WebSocket connection closed for patient %s", patientID)
-            return
-
+            if err := conn.WriteJSON(vitals); err != nil {
+                log.Printf("Error sending vitals update: %v", err)
+                return
+            }
         case <-r.Context().Done():
-            log.Printf("Request context cancelled for patient %s", patientID)
             return
         }
     }
+}
+
+func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+    s.router.ServeHTTP(w, r)
 }

@@ -57,32 +57,12 @@
     color: #64748b;
 }
 
-.docalert-add-button {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background-color: #2563eb;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    transition: background-color 0.2s;
-}
-
-.docalert-add-button:hover {
-    background-color: #1d4ed8;
-}
-
 .docalert-layout {
     display: grid;
     grid-template-columns: 280px 1fr;
     gap: 24px;
 }
 
-/* Sidebar Styles */
 .docalert-sidebar {
     background-color: white;
     border-radius: 8px;
@@ -162,7 +142,6 @@
     font-weight: 500;
 }
 
-/* Alert List Styles */
 .docalert-list {
     display: flex;
     flex-direction: column;
@@ -196,16 +175,6 @@
     border-left-color: #f59e0b;
 }
 
-.docalert-card.unread.appointment {
-    background-color: #eff6ff;
-    border-left-color: #2563eb;
-}
-
-.docalert-card.unread.message {
-    background-color: #f0fdf4;
-    border-left-color: #10b981;
-}
-
 .docalert-card-content {
     display: flex;
     align-items: flex-start;
@@ -220,12 +189,8 @@
     color: #f59e0b;
 }
 
-.docalert-icon-appointment {
-    color: #2563eb;
-}
-
-.docalert-icon-message {
-    color: #10b981;
+.docalert-icon {
+    color: #64748b;
 }
 
 .docalert-card-main {
@@ -388,8 +353,7 @@
 /* Focus States */
 .docalert-search-input:focus-visible,
 .docalert-category-button:focus-visible,
-.docalert-action-button:focus-visible,
-.docalert-add-button:focus-visible {
+.docalert-action-button:focus-visible {
     outline: 2px solid #2563eb;
     outline-offset: 2px;
 }
@@ -400,7 +364,6 @@
         opacity: 0;
         transform: translateY(10px);
     }
-
     to {
         opacity: 1;
         transform: translateY(0);
@@ -411,9 +374,22 @@
     animation: slideIn 0.3s ease-out;
 }
 
+/* Loading and Error States */
+.docalert-loading,
+.docalert-error {
+    display: flex;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+}
+
+.docalert-error {
+    color: #ef4444;
+}
+
 /* Print styles */
 @media print {
-
     .docalert-sidebar,
     .docalert-controls,
     .docalert-action-button {
@@ -431,3 +407,4 @@
         border: 1px solid #e2e8f0;
     }
 }
+    

@@ -1,293 +1,226 @@
 import React, { useState, useEffect } from 'react';
 import DocSidebar from './DocSidebar';
-import './DocDashboard.css';
-import {
-    AlertTriangle, Bell, Calendar, Activity,
-    Clock, CheckCircle, MessageSquare, Users,
-    ChevronRight, Filter, BarChart2, Heart,
-    Stethoscope, UserPlus, FileText, Phone,
-    Video, Mail, X, ArrowUpRight, RefreshCw,
-    MessageCircle, ClipboardList
+import { 
+    Users, AlertTriangle, CheckCircle, Activity,
+    Clock, ChevronRight, AlertCircle, Hospital,
+    Building2, Home, Ambulance, Stethoscope,
+    ArrowUp, ArrowDown, Bell
 } from 'lucide-react';
+import './DocDashboard.css';
 
 const DocDashboard = () => {
-    // Critical Alerts State
-    const [criticalAlerts, setCriticalAlerts] = useState([
-        {
-            id: 1,
-            patientId: "P001",
-            patientName: "John Doe",
-            type: "vital",
-            message: "Heart rate elevated (150 bpm) - Requires immediate attention",
-            timestamp: "2024-10-15T10:30:00",
-            severity: "critical",
-            vitalType: "heart_rate"
-        },
-        {
-            id: 2,
-            patientId: "P003",
-            patientName: "Robert Johnson",
-            type: "vital",
-            message: "Blood pressure: 180/110 mmHg - Hypertensive crisis",
-            timestamp: "2024-10-15T10:15:00",
-            severity: "critical",
-            vitalType: "blood_pressure"
-        },
-        {
-            id: 3,
-            patientId: "P007",
-            patientName: "Mary Smith",
-            type: "lab",
-            message: "Critical potassium levels (6.8 mmol/L)",
-            timestamp: "2024-10-15T09:45:00",
-            severity: "critical",
-            resultType: "lab_result"
-        }
-    ]);
-
-    // Appointments State
-    const [appointments] = useState([
-        {
-            id: 1,
-            patientName: "Jane Smith",
-            time: "09:00 AM",
-            type: "in-person",
-            category: "Follow-up",
-            status: "confirmed",
-            duration: "30min",
-            notes: "Post-surgery check"
-        },
-        {
-            id: 2,
-            patientName: "Michael Brown",
-            time: "10:30 AM",
-            type: "virtual",
-            category: "New Consultation",
-            status: "pending",
-            duration: "45min",
-            notes: "First time visit - Chest pain"
-        },
-        {
-            id: 3,
-            patientName: "Sarah Williams",
-            time: "02:00 PM",
-            type: "in-person",
-            category: "Review",
-            status: "confirmed",
-            duration: "30min",
-            notes: "Medication review"
-        }
-    ]);
-
-    // Tasks State
-    const [tasks] = useState([
-        {
-            id: 1,
-            title: "Review Lab Results",
-            patientName: "Emma Davis",
-            priority: "High",
-            dueDate: "2024-10-15",
-            type: "lab_review",
-            description: "CBC and Metabolic Panel results pending review"
-        },
-        {
-            id: 2,
-            title: "Update Treatment Plan",
-            patientName: "John Doe",
-            priority: "Medium",
-            dueDate: "2024-10-15",
-            type: "treatment_plan",
-            description: "Adjust medication dosage based on recent vital trends"
-        },
-        {
-            id: 3,
-            title: "Sign Medical Certificate",
-            patientName: "Alice Johnson",
-            priority: "Low",
-            dueDate: "2024-10-15",
-            type: "documentation",
-            description: "Return to work certificate needed"
-        }
-    ]);
-
-    // Patient Statistics State
     const [patientStats, setPatientStats] = useState({
-        total: 25,
-        critical: 3,
-        stable: 18,
-        monitoring: 4,
-        newAdmissions: 2,
-        pendingDischarge: 3
+        icu: 0,
+        emergency: 0,
+        hospital: 0,
+        remote: 0
     });
+    const [alertSummary, setAlertSummary] = useState({
+        critical: 0,
+        warning: 0,
+        total: 0,
+        trend: '+5',
+        recentAlerts: 0,
+        acknowledgedAlerts: 0
+    });
+    const [criticalAlerts, setCriticalAlerts] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    // Recent Activities State
-    const [recentActivities] = useState([
-        {
-            id: 1,
-            type: "admission",
-            patientName: "George Wilson",
-            description: "New admission - Acute appendicitis",
-            timestamp: "10:15 AM",
-            priority: "high"
-        },
-        {
-            id: 2,
-            type: "lab_result",
-            patientName: "Sarah Connor",
-            description: "New lab results available",
-            timestamp: "09:30 AM",
-            priority: "medium"
-        },
-        {
-            id: 3,
-            type: "note",
-            patientName: "James Moore",
-            description: "Treatment plan updated",
-            timestamp: "09:00 AM",
-            priority: "low"
-        }
-    ]);
-
-    // Messages State
-    const [messages] = useState([
-        {
-            id: 1,
-            sender: "Dr. Sarah Johnson",
-            content: "Patient in Room 302 needs consultation",
-            timestamp: "10:30 AM",
-            type: "colleague",
-            urgent: true
-        },
-        {
-            id: 2,
-            sender: "Nurse Station B",
-            content: "New vital signs recorded for Patient ID: P007",
-            timestamp: "10:15 AM",
-            type: "staff",
-            urgent: false
-        },
-        {
-            id: 3,
-            sender: "Laboratory",
-            content: "Urgent lab results ready for review",
-            timestamp: "09:45 AM",
-            type: "system",
-            urgent: true
-        }
-    ]);
-
-    // Announcements State
-    const [announcements] = useState([
-        {
-            id: 1,
-            title: "New COVID-19 Protocol",
-            content: "Updated guidelines for patient screening",
-            timestamp: "2024-10-15",
-            priority: "high"
-        },
-        {
-            id: 2,
-            title: "System Maintenance",
-            content: "Scheduled downtime on Sunday 2 AM",
-            timestamp: "2024-10-14",
-            priority: "medium"
-        }
-    ]);
-
-    // Simulate real-time updates
     useEffect(() => {
-        const interval = setInterval(() => {
-            setPatientStats(prev => ({
-                ...prev,
-                monitoring: prev.monitoring + (Math.random() > 0.5 ? 1 : -1)
-            }));
-        }, 5000);
+        fetchPatientStats();
+        fetchAlertStats();
+        
+        const ws = new WebSocket('ws://localhost:8080/ws/alerts');
+        ws.onmessage = (event) => {
+            const alerts = JSON.parse(event.data);
+            processAlerts(alerts);
+        };
 
-        return () => clearInterval(interval);
+        return () => ws.close();
     }, []);
+
+    const fetchPatientStats = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/api/patients');
+            if (!response.ok) throw new Error('Failed to fetch patients');
+            const patients = await response.json();
+            
+            const stats = patients.reduce((acc, patient) => {
+                switch (patient.monitoring_type) {
+                    case 'icu':
+                        acc.icu++;
+                        break;
+                    case 'emergency':
+                        acc.emergency++;
+                        break;
+                    case 'hospital':
+                        acc.hospital++;
+                        break;
+                    case 'remote':
+                        acc.remote++;
+                        break;
+                }
+                return acc;
+            }, { icu: 0, emergency: 0, hospital: 0, remote: 0 });
+
+            setPatientStats(stats);
+        } catch (error) {
+            console.error('Error fetching patient stats:', error);
+        }
+    };
+
+    const fetchAlertStats = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/api/alerts');
+            if (!response.ok) throw new Error('Failed to fetch alerts');
+            const alerts = await response.json();
+            processAlerts(alerts);
+        } catch (error) {
+            console.error('Error fetching alerts:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const processAlerts = (alerts) => {
+        // Calculate alert summary
+        const summary = {
+            critical: alerts.filter(a => a.severity === 'critical').length,
+            warning: alerts.filter(a => a.severity === 'warning').length,
+            total: alerts.length,
+            trend: '+1', // This would be calculated based on historical data
+            recentAlerts: alerts.filter(a => {
+                const alertTime = new Date(a.timestamp);
+                return (new Date() - alertTime) < (1000 * 60 * 60); // Last hour
+            }).length,
+            acknowledgedAlerts: alerts.filter(a => a.status === 'acknowledged').length
+        };
+
+        setAlertSummary(summary);
+
+        // Get critical alerts for display
+        const criticalAlerts = alerts
+            .filter(alert => alert.severity === 'critical')
+            .map(alert => ({
+                id: alert.alert_id,
+                patient: alert.patient_id,
+                message: alert.message,
+                time: new Date(alert.timestamp).toLocaleTimeString(),
+                type: alert.vital_type
+            }))
+            .slice(0, 5);
+
+        setCriticalAlerts(criticalAlerts);
+    };
+
+    if (loading) return <div>Loading...</div>;
 
     return (
         <div className="doc-dashboard-page">
             <DocSidebar />
             <div className="doc-dashboard-content">
+                {/* Header */}
                 <div className="dashboard-header">
                     <div className="header-top">
                         <div className="header-title-group">
                             <h1>Dashboard</h1>
-                            <span className="last-updated">
-                                <Clock size={14} />
+                            <div className="last-updated">
+                                <Clock size={16} />
                                 Last updated: {new Date().toLocaleTimeString()}
-                            </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Patient Monitoring Stats */}
+                <div className="stats-grid">
+                    <div className="dashboard-card">
+                        <div className="card-content">
+                            <div className="stat-label">ICU</div>
+                            <div className="stat-value text-red-500">{patientStats.icu}</div>
+                            <div className="stat-detail">
+                                <Hospital size={16} className="text-red-500" />
+                                Critical Care Unit
+                            </div>
                         </div>
                     </div>
 
-                    <div className="stats-grid">
-                        <div className="dashboard-card">
-                            <div className="card-header">
-                                <div className="card-title">
-                                    <Users size={20} />
-                                    Total Patients
-                                </div>
-                            </div>
-                            <div className="card-content">
-                                <div className="stat-value">{patientStats.total}</div>
-                                <div className="stat-detail">
-                                    <span className="stat-label">New: </span>
-                                    <span className="stat-number">+{patientStats.newAdmissions}</span>
-                                </div>
+                    <div className="dashboard-card">
+                        <div className="card-content">
+                            <div className="stat-label">A&E</div>
+                            <div className="stat-value text-orange-500">{patientStats.emergency}</div>
+                            <div className="stat-detail">
+                                <Ambulance size={16} className="text-orange-500" />
+                                Emergency Department
                             </div>
                         </div>
+                    </div>
 
-                        <div className="dashboard-card critical">
-                            <div className="card-header">
-                                <div className="card-title">
-                                    <AlertTriangle size={20} className="text-red-500" />
-                                    Critical Care
-                                </div>
-                            </div>
-                            <div className="card-content">
-                                <div className="stat-value text-red-500">{patientStats.critical}</div>
-                                <div className="stat-detail">
-                                    <span className="stat-label">Requires attention</span>
-                                </div>
+                    <div className="dashboard-card">
+                        <div className="card-content">
+                            <div className="stat-label">Hospital Ward</div>
+                            <div className="stat-value text-blue-500">{patientStats.hospital}</div>
+                            <div className="stat-detail">
+                                <Building2 size={16} className="text-blue-500" />
+                                General Ward
                             </div>
                         </div>
+                    </div>
 
-                        <div className="dashboard-card stable">
-                            <div className="card-header">
-                                <div className="card-title">
-                                    <CheckCircle size={20} className="text-green-500" />
-                                    Stable
-                                </div>
-                            </div>
-                            <div className="card-content">
-                                <div className="stat-value text-green-500">{patientStats.stable}</div>
-                                <div className="stat-detail">
-                                    <span className="stat-label">Discharge: </span>
-                                    <span className="stat-number">{patientStats.pendingDischarge}</span>
-                                </div>
+                    <div className="dashboard-card">
+                        <div className="card-content">
+                            <div className="stat-label">Remote Monitoring</div>
+                            <div className="stat-value text-green-500">{patientStats.remote}</div>
+                            <div className="stat-detail">
+                                <Home size={16} className="text-green-500" />
+                                Home Care
                             </div>
                         </div>
+                    </div>
+                </div>
 
-                        <div className="dashboard-card monitoring">
-                            <div className="card-header">
-                                <div className="card-title">
-                                    <Activity size={20} className="text-blue-500" />
-                                    Monitoring
-                                </div>
+                {/* Alert Summary Banner */}
+                <div className="alert-summary-container">
+                    <div className="alert-summary-header">
+                        <h2><Bell size={20} /> Alert Overview</h2>
+                        <span className="trend-indicator">
+                            <ArrowUp size={16} />
+                            {alertSummary.trend} from yesterday
+                        </span>
+                    </div>
+                    <div className="alert-summary-banner">
+                        <div className="summary-item critical">
+                            <AlertTriangle size={20} />
+                            <div className="summary-content">
+                                <span className="summary-value">{alertSummary.critical}</span>
+                                <span className="summary-label">Critical Alerts</span>
                             </div>
-                            <div className="card-content">
-                                <div className="stat-value text-blue-500">{patientStats.monitoring}</div>
-                                <div className="stat-detail">
-                                    <span className="stat-label">Under observation</span>
-                                </div>
+                        </div>
+                        <div className="summary-item warning">
+                            <AlertCircle size={20} />
+                            <div className="summary-content">
+                                <span className="summary-value">{alertSummary.warning}</span>
+                                <span className="summary-label">Warning Alerts</span>
+                            </div>
+                        </div>
+                        <div className="summary-item recent">
+                            <Clock size={20} />
+                            <div className="summary-content">
+                                <span className="summary-value">{alertSummary.recentAlerts}</span>
+                                <span className="summary-label">Last Hour</span>
+                            </div>
+                        </div>
+                        <div className="summary-item acknowledged">
+                            <CheckCircle size={20} />
+                            <div className="summary-content">
+                                <span className="summary-value">{alertSummary.acknowledgedAlerts}</span>
+                                <span className="summary-label">Acknowledged</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div className="dashboard-grid">
-
                     {/* Critical Alerts Section */}
                     <div className="dashboard-card col-span-2">
                         <div className="card-header">
@@ -296,30 +229,27 @@ const DocDashboard = () => {
                                     <AlertTriangle className="text-red-500" />
                                     Critical Alerts
                                 </div>
-                                <span className="alert-count">{criticalAlerts.length} active</span>
+                                <div className="stat-number">{criticalAlerts.length} active</div>
                             </div>
                         </div>
                         <div className="card-content">
                             <div className="alerts-list">
-                                {criticalAlerts.map(alert => (
-                                    <div key={alert.id} className={`alert-item severity-${alert.severity}`}>
-                                        <div className="alert-icon">
-                                            <AlertTriangle size={20} />
-                                        </div>
+                                {criticalAlerts.map((alert) => (
+                                    <div key={alert.id} className="alert-item severity-critical">
+                                        <AlertTriangle className="alert-icon" />
                                         <div className="alert-content">
-                                            <h4>{alert.patientName}</h4>
+                                            <h4>{alert.patient}</h4>
                                             <p>{alert.message}</p>
                                             <div className="alert-footer">
-                                                <span className="alert-time">
+                                                <div className="alert-time">
                                                     <Clock size={14} />
-                                                    {new Date(alert.timestamp).toLocaleTimeString()}
-                                                </span>
+                                                    {alert.time}
+                                                </div>
                                                 <span className="alert-type">{alert.type}</span>
                                             </div>
                                         </div>
                                         <button className="alert-action">
-                                            View Details
-                                            <ChevronRight size={16} />
+                                            View Details <ChevronRight size={16} />
                                         </button>
                                     </div>
                                 ))}
@@ -331,182 +261,47 @@ const DocDashboard = () => {
                     <div className="dashboard-card">
                         <div className="card-header">
                             <div className="card-title">
-                                <Calendar />
+                                <Clock />
                                 Today's Schedule
                             </div>
                         </div>
                         <div className="card-content">
                             <div className="appointments-list">
-                                {appointments.map(appointment => (
-                                    <div key={appointment.id} className={`appointment-item status-${appointment.status}`}>
-                                        <div className="appointment-time">
-                                            <Clock size={14} />
-                                            {appointment.time}
-                                            <span className="appointment-duration">({appointment.duration})</span>
-                                        </div>
-                                        <div className="appointment-info">
-                                            <div className="appointment-header">
-                                                <h4>{appointment.patientName}</h4> 
-                                            </div>
-                                            <div className="appointment-details">
-                                                <span className={`appointment-status status-${appointment.status}`}>
-                                                    {appointment.status}
-                                                </span>
-                                            </div>
-                                            <p className="appointment-notes">{appointment.notes}</p>
-                                        </div>
+                                <div className="appointment-item">
+                                    <div className="appointment-time">
+                                        <Clock size={14} />
+                                        09:00 AM (30min)
                                     </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Recent Activities Section */}
-                    <div className="dashboard-card">
-                        <div className="card-header">
-                            <div className="card-title">
-                                <Activity />
-                                Recent Activities
-                            </div>
-                        </div>
-                        <div className="card-content">
-                            <div className="activities-list">
-                                {recentActivities.map(activity => (
-                                    <div key={activity.id} className={`activity-item priority-${activity.priority}`}>
-                                        <div className="activity-icon">
-                                            {activity.type === 'admission' && <UserPlus size={16} />}
-                                            {activity.type === 'lab_result' && <FileText size={16} />}
-                                            {activity.type === 'note' && <ClipboardList size={16} />}
-                                        </div>
-                                        <div className="activity-content">
-                                            <h4>{activity.patientName}</h4>
-                                            <p>{activity.description}</p>
-                                            <span className="activity-time">
-                                                <Clock size={14} />
-                                                {activity.timestamp}
-                                            </span>
-                                        </div>
-                                        <button className="activity-action">
-                                            <ArrowUpRight size={16} />
-                                        </button>
+                                    <div className="appointment-header">
+                                        <h4>Jane Smith</h4>
+                                        <span className="appointment-status status-confirmed">confirmed</span>
                                     </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Tasks Section */}
-                    <div className="dashboard-card col-span-2">
-                        <div className="card-header">
-                            <div className="card-title">
-                                <CheckCircle />
-                                Tasks
-                            </div>
-                        </div>
-                        <div className="card-content">
-                            <div className="tasks-list">
-                                {tasks.map(task => (
-                                    <div key={task.id} className={`task-item priority-${task.priority.toLowerCase()}`}>
-                                        <div className="task-content">
-                                            <div className="task-header">
-                                                <h4>{task.title}</h4>
-                                                <span className={`task-priority priority-${task.priority.toLowerCase()}`}>
-                                                    {task.priority}
-                                                </span>
-                                            </div>
-                                            <p className="task-description">{task.description}</p>
-                                            <div className="task-footer">
-                                                <span className="task-patient">{task.patientName}</span>
-                                                <span className="task-due">
-                                                    <Clock size={14} />
-                                                    Due: {new Date(task.dueDate).toLocaleDateString()}
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <div className="task-actions">
-                                            <button className="task-complete" title="Mark as complete">
-                                                <CheckCircle size={20} />
-                                            </button>
-                                            <button className="task-edit" title="Edit task">
-                                                <FileText size={20} />
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Messages & Communication Section */}
-                    <div className="dashboard-card">
-                        <div className="card-header">
-                            <div className="card-title-group">
-                                <div className="card-title">
-                                    <MessageSquare />
-                                    Messages
+                                    <p className="appointment-notes">Post-surgery check</p>
                                 </div>
-                                <button className="compose-button">
-                                    <MessageCircle size={16} />
-                                    New Message
-                                </button>
-                            </div>
-                        </div>
-                        <div className="card-content">
-                            <div className="messages-list">
-                                {messages.map(message => (
-                                    <div key={message.id} className={`message-item ${message.urgent ? 'urgent' : ''}`}>
-                                        <div className="message-header">
-                                            <h4>{message.sender}</h4>
-                                            <span className={`message-type type-${message.type}`}>
-                                                {message.type}
-                                            </span>
-                                        </div>
-                                        <p className="message-content">{message.content}</p>
-                                        <div className="message-footer">
-                                            <span className="message-time">
-                                                <Clock size={14} />
-                                                {message.timestamp}
-                                            </span>
-                                            <div className="message-actions">
-                                                <button className="action-button" title="Reply">
-                                                    <Mail size={14} />
-                                                </button>
-                                                <button className="action-button" title="Mark as read">
-                                                    <CheckCircle size={14} />
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
 
-                    {/* Announcements Section */}
-                    <div className="dashboard-card">
-                        <div className="card-header">
-                            <div className="card-title">
-                                <Bell />
-                                Announcements
-                            </div>
-                        </div>
-                        <div className="card-content">
-                            <div className="announcements-list">
-                                {announcements.map(announcement => (
-                                    <div key={announcement.id} className={`announcement-item priority-${announcement.priority}`}>
-                                        <div className="announcement-header">
-                                            <h4>{announcement.title}</h4>
-                                            <span className="announcement-date">
-                                                {new Date(announcement.timestamp).toLocaleDateString()}
-                                            </span>
-                                        </div>
-                                        <p className="announcement-content">{announcement.content}</p>
-                                        <button className="announcement-action">
-                                            Read More
-                                            <ChevronRight size={16} />
-                                        </button>
+                                <div className="appointment-item">
+                                    <div className="appointment-time">
+                                        <Clock size={14} />
+                                        10:30 AM (45min)
                                     </div>
-                                ))}
+                                    <div className="appointment-header">
+                                        <h4>Michael Brown</h4>
+                                        <span className="appointment-status status-pending">pending</span>
+                                    </div>
+                                    <p className="appointment-notes">First time visit - Chest pain</p>
+                                </div>
+
+                                <div className="appointment-item">
+                                    <div className="appointment-time">
+                                        <Clock size={14} />
+                                        02:00 PM (60min)
+                                    </div>
+                                    <div className="appointment-header">
+                                        <h4>Sarah Johnson</h4>
+                                        <span className="appointment-status status-confirmed">confirmed</span>
+                                    </div>
+                                    <p className="appointment-notes">Follow-up consultation</p>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -19,8 +19,22 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
+    // Define valid credentials
+    const validPatients = {
+        'P001': 'password',
+        'P004': 'password',
+        'P006': 'password',
+        'P007': 'password'
+    };
+
+    const validDoctors = {
+        'DR001': 'password'
+    };
+
     const handleRoleSelect = (role: string) => {
         setSelectedRole(role);
+        setUsername(''); // Clear username when switching roles
+        setPassword(''); // Clear password when switching roles
     };
 
     const handleProceed = () => {
@@ -29,16 +43,44 @@ const Login = () => {
         }
     };
 
+    const validateCredentials = (username: string, password: string, role: string) => {
+        if (role === 'doctor') {
+            return validDoctors[username] === password;
+        } else if (role === 'patient') {
+            return validPatients[username] === password;
+        }
+        return false;
+    };
+
+    const validateUserRole = (username: string, role: string) => {
+        if (role === 'doctor') {
+            return username.startsWith('DR');
+        } else if (role === 'patient') {
+            return username.startsWith('P');
+        }
+        return false;
+    };
+
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
-        if (selectedRole === 'doctor' && username === 'doctor' && password === 'password') {
+
+        // First check if the user is trying to log in through the correct role
+        if (!validateUserRole(username, selectedRole)) {
+            alert(`Invalid ${selectedRole} ID format. Please use the correct format (${selectedRole === 'doctor' ? 'DR***' : 'P***'})`);
+            return;
+        }
+
+        // Then check credentials
+        if (validateCredentials(username, password, selectedRole)) {
             localStorage.setItem('authToken', 'dummy_token');
             localStorage.setItem('userRole', selectedRole);
-            navigate('/docdashboard');
-        } else if (selectedRole === 'patient' && username === 'patient' && password === 'password') {
-            localStorage.setItem('authToken', 'dummy_token');
-            localStorage.setItem('userRole', selectedRole);
-            navigate('/dashboard');
+            localStorage.setItem('userId', username);
+            
+            if (selectedRole === 'doctor') {
+                navigate('/docdashboard');
+            } else {
+                navigate('/dashboard');
+            }
         } else {
             alert('Invalid credentials');
         }
@@ -85,6 +127,7 @@ const Login = () => {
                                     type="text"
                                     value={username}
                                     onChange={(e) => setUsername(e.target.value)}
+                                    placeholder={selectedRole === 'doctor' ? "Enter Doctor ID (DR***)" : "Enter Patient ID (P***)"}
                                     required
                                 />
                             </div>
@@ -99,6 +142,17 @@ const Login = () => {
                             </div>
                             <button type="submit" className="proceed-btn">
                                 Login
+                            </button>
+                            <button 
+                                type="button" 
+                                className="back-btn"
+                                onClick={() => {
+                                    setShowCredentials(false);
+                                    setUsername('');
+                                    setPassword('');
+                                }}
+                            >
+                                Back to Role Selection
                             </button>
                         </form>
                     )}

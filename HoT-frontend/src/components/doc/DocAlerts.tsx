@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DocSidebar from './DocSidebar';
 import {
     AlertTriangle, AlertCircle, Bell, Calendar,
@@ -6,16 +6,20 @@ import {
     Users, Filter, Plus, Search
 } from 'lucide-react';
 import './DocAlerts.css';
+import { alertService } from '../../services/alertService';
 
 interface Alert {
-    id: number;
-    category: string;
-    type: 'critical' | 'warning' | 'appointment' | 'message';
-    title: string;
-    patient: string;
-    message: string;
+    patient_id: string;
     timestamp: string;
-    isRead: boolean;
+    alert_id: string;
+    message: string;
+    message_id: string;
+    severity: 'warning' | 'critical';
+    status: string;
+    unit: string;
+    value: number;
+    vital_type: string;
+    isRead?: boolean;
 }
 
 interface Category {
@@ -26,129 +30,106 @@ interface Category {
 
 const categories: Category[] = [
     { id: 'all', label: 'All Alerts', icon: <Bell size={16} /> },
-    { id: 'high-priority', label: 'High Priority', icon: <AlertTriangle size={16} /> },
-    { id: 'appointments', label: 'Appointments', icon: <Calendar size={16} /> },
-    { id: 'medication', label: 'Medication', icon: <Bell size={16} /> },
-    { id: 'monitoring', label: 'Monitoring', icon: <AlertCircle size={16} /> },
-    { id: 'messages', label: 'Messages', icon: <MessageSquare size={16} /> }
+    { id: 'critical', label: 'Critical', icon: <AlertTriangle size={16} /> },
+    { id: 'warning', label: 'Warnings', icon: <AlertCircle size={16} /> },
+    { id: 'oxygen_saturation', label: 'Oxygen Saturation', icon: <AlertCircle size={16} /> },
+    { id: 'blood_pressure', label: 'Blood Pressure', icon: <AlertCircle size={16} /> }
 ];
 
 const DocAlert: React.FC = () => {
+    const [alerts, setAlerts] = useState<Alert[]>([]);
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [searchTerm, setSearchTerm] = useState('');
-    const [alerts, setAlerts] = useState<Alert[]>([
-        {
-            id: 1,
-            category: 'high-priority',
-            type: 'critical',
-            title: 'Critical Vital Signs',
-            patient: 'John Doe',
-            message: 'Blood pressure exceeding normal range (180/100)',
-            timestamp: '2024-10-15T10:30:00',
-            isRead: false,
-        },
-        {
-            id: 5,
-            category: 'high-priority',
-            type: 'critical',
-            title: 'Low SpO2 Levels',
-            patient: 'Michael Brown',
-            message: 'Oxygen saturation dropped to 89%',
-            timestamp: '2024-10-15T10:15:00',
-            isRead: false,
-        },
-        {
-            id: 9,
-            category: 'high-priority',
-            type: 'critical',
-            title: 'Irregular ECG Reading',
-            patient: 'Thomas Miller',
-            message: 'Significant arrhythmia detected in latest ECG',
-            timestamp: '2024-10-15T07:30:00',
-            isRead: false,
-        },
-        {
-            id: 3,
-            category: 'appointments',
-            type: 'appointment',
-            title: 'New Appointment Request',
-            patient: 'Robert Johnson',
-            message: 'Requested appointment for October 20th, 2024 at 2:00 PM',
-            timestamp: '2024-10-15T09:00:00',
-            isRead: false,
-        },
-        {
-            id: 7,
-            category: 'appointments',
-            type: 'appointment',
-            title: 'Follow-up Request',
-            patient: 'David Wilson',
-            message: 'Requesting post-surgery follow-up appointment',
-            timestamp: '2024-10-15T08:45:00',
-            isRead: false,
-        },
-        {
-            id: 8,
-            category: 'medication',
-            type: 'message',
-            title: 'Prescription Renewal',
-            patient: 'Lisa Anderson',
-            message: 'Request for blood pressure medication renewal',
-            timestamp: '2024-10-15T08:00:00',
-            isRead: false,
-        },
-        {
-            id: 2,
-            category: 'monitoring',
-            type: 'warning',
-            title: 'Abnormal Heart Rate',
-            patient: 'Jane Smith',
-            message: 'Heart rate elevated above threshold (115 bpm)',
-            timestamp: '2024-10-15T09:45:00',
-            isRead: false,
-        },
-        {
-            id: 6,
-            category: 'monitoring',
-            type: 'warning',
-            title: 'Elevated Temperature',
-            patient: 'Emily Davis',
-            message: 'Body temperature at 38.9°C',
-            timestamp: '2024-10-15T09:30:00',
-            isRead: false,
-        },
-        {
-            id: 4,
-            category: 'messages',
-            type: 'message',
-            title: 'Patient Query',
-            patient: 'Sarah Williams',
-            message: 'Question about medication side effects',
-            timestamp: '2024-10-15T08:30:00',
-            isRead: true,
-        },
-    ]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    const markAsRead = (alertId: number) => {
-        setAlerts(alerts.map(alert =>
-            alert.id === alertId ? { ...alert, isRead: true } : alert
-        ));
+    useEffect(() => {
+        fetchAlerts();
+        
+        const ws = new WebSocket('ws://localhost:8080/ws/alerts');
+        
+        ws.onopen = () => {
+            console.log('WebSocket connected');
+        };
+        
+        ws.onmessage = (event) => {
+            try {
+                const newAlerts = JSON.parse(event.data);
+                setAlerts(prevAlerts => {
+                    const existingIds = new Set(prevAlerts.map(a => a.alert_id));
+                    const uniqueNewAlerts = newAlerts.filter((alert: Alert) => 
+                        !existingIds.has(alert.alert_id)
+                    );
+                    return [...prevAlerts, ...uniqueNewAlerts].map(alert => ({
+                        ...alert,
+                        isRead: prevAlerts.find(a => a.alert_id === alert.alert_id)?.isRead || false
+                    }));
+                });
+            } catch (error) {
+                console.error('Error processing WebSocket message:', error);
+            }
+        };
+
+        ws.onerror = (error) => {
+            console.error('WebSocket error:', error);
+            setError('Failed to connect to real-time alerts');
+        };
+
+        return () => {
+            if (ws.readyState === WebSocket.OPEN) {
+                ws.close();
+            }
+        };
+    }, []);
+
+    const fetchAlerts = async () => {
+        try {
+            const data = await alertService.getAlerts();
+            setAlerts(data.map((alert: Alert) => ({ ...alert, isRead: false })));
+            setError(null);
+        } catch (err) {
+            console.error('Error fetching alerts:', err);
+            setError('Failed to fetch alerts');
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const deleteAlert = (alertId: number) => {
-        setAlerts(alerts.filter(alert => alert.id !== alertId));
+    const markAsRead = async (alertId: string, patientId: string) => {
+        try {
+            const response = await fetch(`http://localhost:8080/api/alerts/${alertId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    status: 'read',
+                    patient_id: patientId
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update alert');
+            }
+
+            setAlerts(alerts.map(alert =>
+                alert.alert_id === alertId ? { ...alert, isRead: true, status: 'read' } : alert
+            ));
+        } catch (err) {
+            console.error('Error updating alert:', err);
+        }
     };
 
-    const getIcon = (type: Alert['type']) => {
-        switch (type) {
+    const deleteAlert = (alertId: string) => {
+        setAlerts(alerts.filter(alert => alert.alert_id !== alertId));
+    };
+
+    const getIcon = (severity: string) => {
+        switch (severity) {
             case 'critical':
                 return <AlertTriangle className="docalert-icon-critical" size={24} />;
             case 'warning':
                 return <AlertCircle className="docalert-icon-warning" size={24} />;
-            case 'appointment':
-                return <Calendar className="docalert-icon-appointment" size={24} />;
-            case 'message':
-                return <MessageSquare className="docalert-icon-message" size={24} />;
             default:
                 return <Bell className="docalert-icon" size={24} />;
         }
@@ -156,15 +137,24 @@ const DocAlert: React.FC = () => {
 
     const filteredAlerts = alerts
         .filter(alert => {
-            const matchesCategory = selectedCategory === 'all' || alert.category === selectedCategory;
-            const matchesSearch = alert.patient.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                alert.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                alert.title.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchesCategory = selectedCategory === 'all' || 
+                                  alert.severity === selectedCategory ||
+                                  alert.vital_type.includes(selectedCategory);
+            const matchesSearch = alert.patient_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                alert.message.toLowerCase().includes(searchTerm.toLowerCase());
             return matchesCategory && matchesSearch;
         })
         .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
     const unreadCount = alerts.filter(a => !a.isRead).length;
+
+    if (loading) {
+        return <div className="flex h-screen items-center justify-center">Loading alerts...</div>;
+    }
+
+    if (error) {
+        return <div className="flex h-screen items-center justify-center text-red-500">{error}</div>;
+    }
 
     return (
         <div className="docalert-page">
@@ -214,30 +204,32 @@ const DocAlert: React.FC = () => {
                         <div className="docalert-list">
                             {filteredAlerts.map(alert => (
                                 <div
-                                    key={alert.id}
-                                    className={`docalert-card ${!alert.isRead ? 'unread' : ''} ${alert.type}`}
+                                    key={alert.alert_id}
+                                    className={`docalert-card ${!alert.isRead ? 'unread' : ''} ${alert.severity}`}
                                 >
                                     <div className="docalert-card-content">
-                                        {getIcon(alert.type)}
+                                        {getIcon(alert.severity)}
                                         <div className="docalert-card-main">
                                             <div className="docalert-card-header">
                                                 <div className="docalert-card-title-group">
-                                                    <h3 className="docalert-card-title">{alert.title}</h3>
+                                                    <h3 className="docalert-card-title">
+                                                        {`${alert.severity.toUpperCase()}: ${alert.vital_type.replace(/_/g, ' ')}`}
+                                                    </h3>
                                                     <p className="docalert-card-patient">
                                                         <Users size={16} />
-                                                        {alert.patient}
+                                                        {alert.patient_id}
                                                     </p>
                                                 </div>
                                                 <div className="docalert-card-actions">
                                                     <button
-                                                        onClick={() => markAsRead(alert.id)}
+                                                        onClick={() => markAsRead(alert.alert_id, alert.patient_id)}
                                                         className="docalert-action-button docalert-read-button"
                                                         title="Mark as read"
                                                     >
                                                         <CheckCircle size={20} />
                                                     </button>
                                                     <button
-                                                        onClick={() => deleteAlert(alert.id)}
+                                                        onClick={() => deleteAlert(alert.alert_id)}
                                                         className="docalert-action-button docalert-delete-button"
                                                         title="Delete alert"
                                                     >

@@ -73,7 +73,7 @@ const mockAppointments: Appointment[] = [
     {
         id: 1,
         title: "Cardiac Surgery",
-        date: "2024-11-05",
+        date: "2024-12-05",
         time: "09:30",
         location: "OR 302",
         patient: {
@@ -97,7 +97,7 @@ const mockAppointments: Appointment[] = [
     {
         id: 2,
         title: "Post-Op Follow-up",
-        date: "2024-11-12",
+        date: "2024-12-12",
         time: "14:15",
         location: "Clinic Room 205",
         patient: {
@@ -120,7 +120,7 @@ const mockAppointments: Appointment[] = [
     {
         id: 3,
         title: "Emergency Consultation",
-        date: "2024-11-15",
+        date: "2024-12-15",
         time: "16:00",
         location: "Emergency Department",
         patient: {
@@ -144,7 +144,7 @@ const mockAppointments: Appointment[] = [
     {
         id: 4,
         title: "New Patient Consultation",
-        date: "2024-11-20",
+        date: "2024-12-20",
         time: "10:00",
         location: "Clinic Room 103",
         patient: {
