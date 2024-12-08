@@ -4,7 +4,7 @@ import (
     "encoding/json"
     "net/http"
     "github.com/gorilla/mux"
-    "your-project/internal/db"
+    "github.com/sshreyx1/HealthofThings/HoT-backend/internal/db"
 )
 
 type AlertHandler struct {
